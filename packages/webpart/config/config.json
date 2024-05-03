@@ -1,0 +1,17 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "half-year-calendar-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/half-year-calendar/HalfYearCalendarWebPart.js",
+          "manifest": "./src/webparts/half-year-calendar/HalfYearCalendarWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+  }
+}

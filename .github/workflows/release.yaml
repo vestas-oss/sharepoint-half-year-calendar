@@ -1,0 +1,23 @@
+name: Release
+on:
+  release:
+    types: [created]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install dependencies and package 🔧
+        run: npm ci && npm run build
+      - name: Upload to release 📦
+        uses: JasonEtco/upload-to-release@master
+        with:
+          args: packages/webpart/sharepoint/solution/half-year-calendar-webpart.sppkg application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

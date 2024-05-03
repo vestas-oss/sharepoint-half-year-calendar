@@ -1,0 +1,39 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "build-force": "turbo run build --force",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "start": "turbo run start"
+  },
+  "devDependencies": {
+    "@turbo/gen": "^1.9.7",
+    "@typescript-eslint/eslint-plugin": "^5.59.11",
+    "@typescript-eslint/parser": "^5.59.11",
+    "@typescript-eslint/typescript-estree": "^5.59.11",
+    "eslint": "^7.32.0",
+    "turbo": "^1.10.15"
+  },
+  "name": "@vestas/half-year-calendar",
+  "engines": {
+    "node": "^18"
+  },
+  "packageManager": "npm@8.19.2",
+  "workspaces": [
+    "packages/*"
+  ],
+  "overrides": {
+    "@microsoft/sp-webpart-base": {
+      "react": "18.2.0",
+      "react-dom": "18.2.0",
+      "@types/react": "18.2.21",
+      "@types/react-dom": "18.2.21"
+    },
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "@types/react": "18.2.21",
+    "@types/react-dom": "18.2.21"
+  }
+}

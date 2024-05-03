@@ -1,0 +1,21 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "Half Year Calendar",
+    "id": "90f2e4f7-0a28-4f56-b29a-23b8edd21698",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "Half Year Calendar",
+      "websiteUrl": "https://github.com/vestas-digital-employee-tools/sharepoint-half-year-calendar/",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": ""
+    }
+  },
+  "paths": {
+    "zippedPackage": "solution/half-year-calendar-webpart.sppkg"
+  }
+}
