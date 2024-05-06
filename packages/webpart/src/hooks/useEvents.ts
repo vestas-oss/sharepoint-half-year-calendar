@@ -4,9 +4,7 @@ import "@pnp/sp";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import "@pnp/sp/items";
-import "@pnp/sp/items/get-all";
 import { useMemo } from "react";
-
 
 type IRange = {
     start: number | Date
@@ -48,7 +46,12 @@ export const useEvents = (year: number, month: number, day?: number): { isPendin
             const calendar = lists.getById(listInfos[0].Id);
 
             type SharePointEvent = { Title: string, Start?: string, EventDate?: string, End?: string, EndDate?: string };
-            const items = await calendar.items.getAll<SharePointEvent>();
+
+            let items = new Array<SharePointEvent>();
+            for await (const page of calendar.items) {
+                items = items.concat(page);
+            }
+
             return items.map((item) => {
                 const start = item.Start ?? item.EventDate ?? new Date().toISOString();
                 const end = item.End ?? item.EndDate ?? new Date().toISOString();
