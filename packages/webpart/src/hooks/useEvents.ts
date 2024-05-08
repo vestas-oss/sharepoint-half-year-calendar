@@ -53,7 +53,7 @@ export const useEvents = (year: number, month: number, day?: number): { isPendin
                 items = items.concat(page);
             }
 
-            return items.map((item) => {
+            const events = items.map((item) => {
                 const start = item.Start ?? item.EventDate ?? new Date().toISOString();
                 const end = item.End ?? item.EndDate ?? new Date().toISOString();
                 return {
@@ -63,6 +63,10 @@ export const useEvents = (year: number, month: number, day?: number): { isPendin
                     color: tokens.colorBrandForegroundInvertedHover,
                 };
             });
+
+            const sorted = events.toSorted((a, b) => a.start.getTime() - b.start.getTime());
+
+            return sorted;
         },
     });
 
