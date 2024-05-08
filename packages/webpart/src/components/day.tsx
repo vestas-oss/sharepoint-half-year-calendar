@@ -48,14 +48,12 @@ export function Day(props: Props) {
                 <div dangerouslySetInnerHTML={{ __html: dayCharacter || "&nbsp;" }} />
                 {day}
             </div>
-            <div
-                className={clsx("min-w-0 w-full")}>
+            <div className={clsx("min-w-0 w-full")}>
                 {!isPending && events?.length === 1 ? (
                     <CalendarEvent onClick={onClickCallback(events[0])} event={events[0]} />
                 ) : null}
                 {!isPending && events?.length === 2 ? (
-                    <div
-                        className={clsx("flex flex-col")}>
+                    <div className={clsx("flex flex-col")}>
                         <CalendarEvent
                             size="small"
                             onClick={onClickCallback(events[0])}
@@ -93,7 +91,7 @@ export function Day(props: Props) {
 
     if (!isPending && events && events.length > 0 && day) {
         content = (
-            <Popover withArrow openOnHover={true}>
+            <Popover withArrow openOnHover={true} mouseLeaveDelay={0}>
                 <PopoverTrigger disableButtonEnhancement>{content}</PopoverTrigger>
 
                 <PopoverSurface>
