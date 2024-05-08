@@ -2,9 +2,11 @@ import { ToolbarButton } from "@fluentui/react-components";
 import React, { useCallback, useState } from "react";
 import { Month } from "./month";
 import { ArrowDownRegular, ArrowUpRegular } from "@fluentui/react-icons";
+import { EventsProvider } from "../providers/EventsProvider";
+import { Period } from "../types/Period";
 
 export function HalfYearCalendar() {
-    const [period, setPeriod] = useState({
+    const [period, setPeriod] = useState<Period>({
         year: new Date().getFullYear(),
         half: new Date().getMonth() > 5 ? ("H2" as const) : ("H1" as const),
     });
@@ -70,16 +72,18 @@ export function HalfYearCalendar() {
                     {period.year} {period.half}
                 </h1>
             </div>
-            <div className="flex border-2 border-[#d0d0d0] divide-x-2 divide-[#d0d0d0]">
-                {Array.from({ length: 6 }).map((_, i) => {
-                    const month = i + (period.half === "H2" ? 6 : 0);
-                    return (
-                        <div key={`month-${month}`} className="flex-grow flex-1 min-w-0">
-                            <Month year={period.year} month={month} />
-                        </div>
-                    );
-                })}
-            </div>
+            <EventsProvider period={period}>
+                <div className="flex border-2 border-[#d0d0d0] divide-x-2 divide-[#d0d0d0]">
+                    {Array.from({ length: 6 }).map((_, i) => {
+                        const month = i + (period.half === "H2" ? 6 : 0);
+                        return (
+                            <div key={`month-${month}`} className="flex-grow flex-1 min-w-0">
+                                <Month year={period.year} month={month} />
+                            </div>
+                        );
+                    })}
+                </div>
+            </EventsProvider>
         </div>
     );
 }

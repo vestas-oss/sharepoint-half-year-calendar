@@ -19,7 +19,7 @@ type Props = {
 
 export function Day(props: Props) {
     const { year, month, day } = props;
-    const { isPending, events } = useEvents(year, month, day);
+    const { isFetched, events } = useEvents(year, month, day);
 
     const onClickCallback = useCallback(
         (event: { title: string }) => () => {
@@ -55,15 +55,15 @@ export function Day(props: Props) {
                 {day}
             </div>
             <div className={clsx("min-w-0 w-full")}>
-                {isPending && (
+                {isFetched && (
                     <Skeleton as="div" style={{ height: "100%" }}>
                         <SkeletonItem style={{ height: "100%" }} />
                     </Skeleton>
                 )}
-                {!isPending && events?.length === 1 ? (
+                {!isFetched && events?.length === 1 ? (
                     <CalendarEvent onClick={onClickCallback(events[0])} event={events[0]} />
                 ) : null}
-                {!isPending && events?.length === 2 ? (
+                {!isFetched && events?.length === 2 ? (
                     <div className={clsx("flex flex-col")}>
                         <CalendarEvent
                             size="small"
@@ -77,7 +77,7 @@ export function Day(props: Props) {
                         />
                     </div>
                 ) : null}
-                {!isPending && events && events.length > 2 ? (
+                {!isFetched && events && events.length > 2 ? (
                     <div className="flex flex-row divide-x-[1px] divide-[#d0d0d0]">
                         <div className="flex flex-col min-w-0 grow">
                             <CalendarEvent
@@ -100,7 +100,7 @@ export function Day(props: Props) {
         </div>
     );
 
-    if (!isPending && events && events.length > 0 && day) {
+    if (!isFetched && events && events.length > 0 && day) {
         content = (
             <Popover withArrow openOnHover={true} mouseLeaveDelay={0}>
                 <PopoverTrigger disableButtonEnhancement>{content}</PopoverTrigger>
