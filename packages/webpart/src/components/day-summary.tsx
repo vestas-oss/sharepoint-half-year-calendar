@@ -16,10 +16,43 @@ export function DaySummary(props: Props) {
 
     const formatEvents = useMemo(() => {
         const dateTimeFormat = new Intl.DateTimeFormat("default", { timeStyle: "short" } as any);
+        const relativeFormat = new Intl.RelativeTimeFormat("en", {
+            style: "long",
+            numeric: "auto",
+        });
+
+        const formatTime = (eventDate?: Date) => {
+            if (!eventDate) {
+                return "";
+            }
+
+            if (
+                eventDate.getFullYear() === year &&
+                eventDate.getMonth() === month &&
+                eventDate.getDate() === day
+            ) {
+                return dateTimeFormat.format(eventDate);
+            }
+
+            const millisecondsDiff = eventDate.getTime() - date.getTime();
+
+            const daysDiff = Math.floor(millisecondsDiff / (24 * 60 * 60 * 1000));
+
+            const relative = relativeFormat.format(daysDiff, "day");
+            switch (relative) {
+                case "tomorrow":
+                    return "next day";
+                case "yesterday":
+                    return "previous day";
+                default:
+                    return relative;
+            }
+        };
+
         return (events ?? []).map((event) => {
             return {
-                start: event.start ? dateTimeFormat.format(event.start) : "",
-                end: event.end ? dateTimeFormat.format(event.end) : "",
+                start: formatTime(event.start),
+                end: formatTime(event.end),
                 title: event.title,
                 color: event.color,
             };

@@ -29,7 +29,8 @@
       "ES2015",
       "es2015.collection",
       "es2015.promise",
-      "esnext.asynciterable"
+      "esnext.asynciterable",
+      "ES2020.Intl"
     ],
     "paths": {
       "@/*": ["./src/*"]
