@@ -64,9 +64,9 @@ export const useEvents = (year: number, month: number, day?: number): { isPendin
                 };
             });
 
-            const sorted = events.toSorted((a, b) => a.start.getTime() - b.start.getTime());
+            events.sort((a, b) => a.start.getTime() - b.start.getTime());
 
-            return sorted;
+            return events;
         },
     });
 
