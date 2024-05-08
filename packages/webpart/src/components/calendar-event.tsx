@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import React from "react";
-import { tokens } from "@fluentui/react-components";
 
 type Props = {
     event: {
@@ -13,10 +12,7 @@ type Props = {
 
 export function CalendarEvent(props: Props) {
     const { event, size, onClick } = props;
-    const { title, color } = Object.assign(
-        { color: tokens.colorBrandForegroundInvertedHover },
-        event
-    );
+    const { title, color } = event;
 
     if (size === "small") {
         return (

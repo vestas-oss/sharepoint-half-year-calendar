@@ -5,6 +5,7 @@ import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import "@pnp/sp/items";
 import { useMemo } from "react";
+import { tokens } from "@fluentui/react-components";
 
 type IRange = {
     start: number | Date
@@ -59,6 +60,7 @@ export const useEvents = (year: number, month: number, day?: number): { isPendin
                     title: item.Title,
                     start: new Date(start),
                     end: new Date(end),
+                    color: tokens.colorBrandForegroundInvertedHover,
                 };
             });
         },
