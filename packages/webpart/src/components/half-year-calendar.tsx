@@ -49,19 +49,23 @@ export function HalfYearCalendar() {
     return (
         <div className="flex w-full flex-col">
             <div className="flex flex-row pb-1 gap-1">
-                <ToolbarButton onClick={onToday} style={{minWidth: "unset"}}>Today</ToolbarButton>
-                <ToolbarButton
-                    icon={<ArrowDownRegular />}
-                    className="rotate-90"
-                    title="Previous"
-                    onClick={onPrevious}
-                />
-                <ToolbarButton
-                    icon={<ArrowUpRegular />}
-                    className="rotate-90"
-                    title="Next"
-                    onClick={onNext}
-                />
+                <div className="print:hidden flex flex-row gap-1">
+                    <ToolbarButton onClick={onToday} style={{ minWidth: "unset" }}>
+                        Today
+                    </ToolbarButton>
+                    <ToolbarButton
+                        icon={<ArrowDownRegular />}
+                        className="rotate-90 print:hidden"
+                        title="Previous"
+                        onClick={onPrevious}
+                    />
+                    <ToolbarButton
+                        icon={<ArrowUpRegular />}
+                        className="rotate-90 print:hidden"
+                        title="Next"
+                        onClick={onNext}
+                    />
+                </div>
                 <h1 className="text-2xl font-bold">
                     {period.year} {period.half}
                 </h1>
