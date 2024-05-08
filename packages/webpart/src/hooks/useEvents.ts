@@ -54,8 +54,8 @@ export const useEvents = (year: number, month: number, day?: number): { isPendin
             }
 
             const events = items.map((item) => {
-                const start = item.Start ?? item.EventDate ?? new Date().toISOString();
-                const end = item.End ?? item.EndDate ?? new Date().toISOString();
+                const start = item.EventDate ?? new Date().toISOString();
+                const end = item.EndDate ?? new Date().toISOString();
                 return {
                     title: item.Title,
                     start: new Date(start),
