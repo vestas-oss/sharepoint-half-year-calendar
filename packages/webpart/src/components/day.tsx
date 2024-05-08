@@ -2,7 +2,13 @@ import React, { useCallback } from "react";
 import clsx from "clsx";
 import { useEvents } from "../hooks/useEvents";
 import { CalendarEvent } from "./calendar-event";
-import { Popover, PopoverSurface, PopoverTrigger } from "@fluentui/react-components";
+import {
+    Popover,
+    PopoverSurface,
+    PopoverTrigger,
+    Skeleton,
+    SkeletonItem,
+} from "@fluentui/react-components";
 import { DaySummary } from "./day-summary";
 
 type Props = {
@@ -49,6 +55,11 @@ export function Day(props: Props) {
                 {day}
             </div>
             <div className={clsx("min-w-0 w-full")}>
+                {isPending && (
+                    <Skeleton as="div" style={{ height: "100%" }}>
+                        <SkeletonItem style={{ height: "100%" }} />
+                    </Skeleton>
+                )}
                 {!isPending && events?.length === 1 ? (
                     <CalendarEvent onClick={onClickCallback(events[0])} event={events[0]} />
                 ) : null}
