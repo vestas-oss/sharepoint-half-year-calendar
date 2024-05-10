@@ -19,7 +19,6 @@ export function CalendarEvent(props: Props) {
             <div
                 onClick={onClick}
                 style={{ backgroundColor: color }}
-                className={clsx("hover:cursor-pointer")}
                 title={title}>
                 <div className="truncate h-[13px] px-[2px] text-[10px] leading-tight font-semibold">
                     {title}
@@ -32,7 +31,7 @@ export function CalendarEvent(props: Props) {
         <div
             onClick={onClick}
             style={{ backgroundColor: color }}
-            className={clsx(`h-full w-full p-[2px] hover:cursor-pointer`, "flex items-center")}
+            className={clsx(`h-full w-full p-[2px]`, "flex items-center")}
             title={title}>
             <div className="truncate px-[2px] text-xs font-semibold">{title}</div>
         </div>

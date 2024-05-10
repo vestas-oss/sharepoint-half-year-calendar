@@ -21,13 +21,6 @@ export function Day(props: Props) {
     const { year, month, day } = props;
     const { isFetched, events } = useEvents(year, month, day);
 
-    const onClickCallback = useCallback(
-        (event: { title: string }) => () => {
-            alert(event.title);
-        },
-        []
-    );
-
     let dayCharacter = "";
     let weekday: "" | number = "";
     if (day) {
@@ -60,36 +53,18 @@ export function Day(props: Props) {
                         <SkeletonItem style={{ height: "100%" }} />
                     </Skeleton>
                 )}
-                {isFetched && events?.length === 1 ? (
-                    <CalendarEvent onClick={onClickCallback(events[0])} event={events[0]} />
-                ) : null}
+                {isFetched && events?.length === 1 ? <CalendarEvent event={events[0]} /> : null}
                 {isFetched && events?.length === 2 ? (
                     <div className={clsx("flex flex-col")}>
-                        <CalendarEvent
-                            size="small"
-                            onClick={onClickCallback(events[0])}
-                            event={events[0]}
-                        />
-                        <CalendarEvent
-                            size="small"
-                            onClick={onClickCallback(events[1])}
-                            event={events[1]}
-                        />
+                        <CalendarEvent size="small" event={events[0]} />
+                        <CalendarEvent size="small" event={events[1]} />
                     </div>
                 ) : null}
                 {isFetched && events && events.length > 2 ? (
                     <div className="flex flex-row divide-x-[1px] divide-[#d0d0d0]">
                         <div className="flex flex-col min-w-0 grow">
-                            <CalendarEvent
-                                size="small"
-                                onClick={onClickCallback(events[0])}
-                                event={events[0]}
-                            />
-                            <CalendarEvent
-                                size="small"
-                                onClick={onClickCallback(events[1])}
-                                event={events[1]}
-                            />
+                            <CalendarEvent size="small" event={events[0]} />
+                            <CalendarEvent size="small" event={events[1]} />
                         </div>
                         <div className="bg-[#f8f8f8] flex items-center px-[2px]">
                             <div className="font-semibold min-w-[22px]">+{events.length - 2}</div>
@@ -100,7 +75,7 @@ export function Day(props: Props) {
         </div>
     );
 
-    if (!isFetched && events && events.length > 0 && day) {
+    if (isFetched && events && events.length > 0 && day) {
         content = (
             <Popover withArrow openOnHover={true} mouseLeaveDelay={0}>
                 <PopoverTrigger disableButtonEnhancement>{content}</PopoverTrigger>
