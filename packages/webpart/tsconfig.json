@@ -31,10 +31,7 @@
       "es2015.promise",
       "esnext.asynciterable",
       "ES2020.Intl"
-    ],
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    ]
   },
   "include": [
     "src/**/*.ts",

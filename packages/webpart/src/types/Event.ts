@@ -1,6 +1,6 @@
 export type Event = {
     title: string;
-    start?: Date;
-    end?: Date;
+    start: Date;
+    end: Date;
     color?: string;
 }

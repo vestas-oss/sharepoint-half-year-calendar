@@ -15,18 +15,18 @@ export function EventsProvider(props: Props) {
 
     const { periodStart, periodEnd } = useMemo(() => {
         return {
-            periodStart: new Date(period.year, period.half === "H1" ? 0 : 6, 31),
-            periodEnd: new Date(period.year, period.half === "H1" ? 6 : 12, 31, 23, 59, 59),
+            periodStart: new Date(period.year, period.half === "H1" ? 0 : 5, 1),
+            periodEnd: new Date(period.year, period.half === "H1" ? 5 : 11, 31, 23, 59, 59),
         };
     }, [period]);
 
     const { data: events, isFetched } = useQuery({
-        queryKey: ["half-year-calendar-events"],
+        queryKey: ["half-year-calendar-events", period.year, period.half],
         queryFn: async () => {
             const lists = sp.web.lists;
             // Calendar list and not hidden
-            const filter = "BaseTemplate eq 106 and Hidden eq false and ItemCount gt 0";
-            const listInfos = await lists.filter(filter)();
+            const listsFilter = "BaseTemplate eq 106 and Hidden eq false and ItemCount gt 0";
+            const listInfos = await lists.filter(listsFilter)();
             if (!listInfos || listInfos.length === 0) {
                 return [];
             }
@@ -34,19 +34,26 @@ export function EventsProvider(props: Props) {
 
             type SharePointEvent = {
                 Title: string;
-                EventDate?: string;
-                EndDate?: string;
+                EventDate: string;
+                EndDate: string;
             };
 
             let items = new Array<SharePointEvent>();
-            for await (const page of calendar.items) {
+            const isoString = (date: Date) => date.toISOString().split(".").shift() + "Z";
+            const filter = (s: "Event" | "End") =>
+                `${s}Date ge datetime'${isoString(periodStart)}' and ` +
+                `${s}Date le datetime'${isoString(periodEnd)}'`;
+            // Filter: starts or ends within period
+            const calendarFilter = `(${filter("Event")}) or (${filter("End")})`;
+            const selects = ["Title", "EventDate", "EndDate"];
+            for await (const page of calendar.items.filter(calendarFilter).select(...selects)) {
                 items = items.concat(page);
             }
 
             const events = items
                 .map((item) => {
-                    const start = item.EventDate ?? new Date().toISOString();
-                    const end = item.EndDate ?? new Date().toISOString();
+                    const start = item.EventDate;
+                    const end = item.EndDate;
                     return {
                         title: item.Title,
                         start: new Date(start),
@@ -62,6 +69,8 @@ export function EventsProvider(props: Props) {
     });
 
     return (
-        <EventsContext.Provider value={{ isFetched, events: events ?? [] }}>{children}</EventsContext.Provider>
+        <EventsContext.Provider value={{ isFetched, events: events ?? [] }}>
+            {children}
+        </EventsContext.Provider>
     );
 }

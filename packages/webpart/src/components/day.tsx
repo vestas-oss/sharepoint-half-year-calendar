@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import clsx from "clsx";
 import { useEvents } from "../hooks/useEvents";
 import { CalendarEvent } from "./calendar-event";
