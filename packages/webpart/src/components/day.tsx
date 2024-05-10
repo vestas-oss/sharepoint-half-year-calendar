@@ -55,15 +55,15 @@ export function Day(props: Props) {
                 {day}
             </div>
             <div className={clsx("min-w-0 w-full")}>
-                {isFetched && (
+                {!isFetched && (
                     <Skeleton as="div" style={{ height: "100%" }}>
                         <SkeletonItem style={{ height: "100%" }} />
                     </Skeleton>
                 )}
-                {!isFetched && events?.length === 1 ? (
+                {isFetched && events?.length === 1 ? (
                     <CalendarEvent onClick={onClickCallback(events[0])} event={events[0]} />
                 ) : null}
-                {!isFetched && events?.length === 2 ? (
+                {isFetched && events?.length === 2 ? (
                     <div className={clsx("flex flex-col")}>
                         <CalendarEvent
                             size="small"
@@ -77,7 +77,7 @@ export function Day(props: Props) {
                         />
                     </div>
                 ) : null}
-                {!isFetched && events && events.length > 2 ? (
+                {isFetched && events && events.length > 2 ? (
                     <div className="flex flex-row divide-x-[1px] divide-[#d0d0d0]">
                         <div className="flex flex-col min-w-0 grow">
                             <CalendarEvent
