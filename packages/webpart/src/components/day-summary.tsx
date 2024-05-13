@@ -12,27 +12,73 @@ export function DaySummary(props: Props) {
     const { year, month, day, events } = props;
 
     const date = new Date(year, month, day);
-    const dayName = new Intl.DateTimeFormat("default", { weekday: "long" }).format(date);
-    const monthName = new Intl.DateTimeFormat("default", { month: "long" }).format(date);
+    const dayShort = new Intl.DateTimeFormat("default", { weekday: "short" }).format(date);
 
     const formatEvents = useMemo(() => {
-        return (events ?? []).map(event => {
-            return {
-                start: event.start ?  new Intl.DateTimeFormat("default", { timeStyle: "short" } as any).format(event.start) : "",
-                end: event.end ?  new Intl.DateTimeFormat("default", { timeStyle: "short" } as any).format(event.end) : "",
-                title: event.title,
+        const dateTimeFormat = new Intl.DateTimeFormat("default", { timeStyle: "short" } as any);
+        const relativeFormat = new Intl.RelativeTimeFormat("en", {
+            style: "long",
+            numeric: "auto",
+        });
+
+        const formatTime = (eventDate?: Date) => {
+            if (!eventDate) {
+                return "";
             }
-        })
+
+            if (
+                eventDate.getFullYear() === year &&
+                eventDate.getMonth() === month &&
+                eventDate.getDate() === day
+            ) {
+                return dateTimeFormat.format(eventDate);
+            }
+
+            const millisecondsDiff = eventDate.getTime() - date.getTime();
+
+            const daysDiff = Math.floor(millisecondsDiff / (24 * 60 * 60 * 1000));
+
+            const relative = relativeFormat.format(daysDiff, "day");
+            switch (relative) {
+                case "tomorrow":
+                    return "next day";
+                case "yesterday":
+                    return "previous day";
+                default:
+                    return relative;
+            }
+        };
+
+        return (events ?? []).map((event) => {
+            return {
+                start: formatTime(event.start),
+                end: formatTime(event.end),
+                title: event.title,
+                color: event.color,
+            };
+        });
     }, [events]);
 
     return (
-        <div>
-            {dayName} {day} {monthName}, {year}
-            {formatEvents.map((event, index) => (
-                <div key={`event-${index}`}>
-                    {event.start} {event.end} {event.title}
-                </div>
-            ))}
+        <div className="flex flex-row gap-1">
+            <div>
+                <div className="text-3xl text-center">{day}</div>
+                <div className="text-center">{dayShort}</div>
+            </div>
+
+            <div>
+                {formatEvents.map((event, index) => (
+                    <div
+                        key={`event-${index}`}
+                        className="p-2 m-2 min-w-72"
+                        style={{ backgroundColor: event.color }}>
+                        <div className="font-semibold">{event.title}</div>
+                        <div>
+                            {event.start} - {event.end}
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }

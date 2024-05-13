@@ -1,8 +1,14 @@
-import React, { useCallback } from "react";
+import React from "react";
 import clsx from "clsx";
 import { useEvents } from "../hooks/useEvents";
 import { CalendarEvent } from "./calendar-event";
-import { Popover, PopoverSurface, PopoverTrigger } from "@fluentui/react-components";
+import {
+    Popover,
+    PopoverSurface,
+    PopoverTrigger,
+    Skeleton,
+    SkeletonItem,
+} from "@fluentui/react-components";
 import { DaySummary } from "./day-summary";
 
 type Props = {
@@ -13,14 +19,7 @@ type Props = {
 
 export function Day(props: Props) {
     const { year, month, day } = props;
-    const { isPending, events } = useEvents(year, month, day);
-
-    const onClickCallback = useCallback(
-        (event: { title: string }) => () => {
-            alert(event.title);
-        },
-        []
-    );
+    const { isFetched, events } = useEvents(year, month, day);
 
     let dayCharacter = "";
     let weekday: "" | number = "";
@@ -48,39 +47,24 @@ export function Day(props: Props) {
                 <div dangerouslySetInnerHTML={{ __html: dayCharacter || "&nbsp;" }} />
                 {day}
             </div>
-            <div
-                className={clsx("min-w-0 w-full")}>
-                {!isPending && events?.length === 1 ? (
-                    <CalendarEvent onClick={onClickCallback(events[0])} event={events[0]} />
-                ) : null}
-                {!isPending && events?.length === 2 ? (
-                    <div
-                        className={clsx("flex flex-col")}>
-                        <CalendarEvent
-                            size="small"
-                            onClick={onClickCallback(events[0])}
-                            event={events[0]}
-                        />
-                        <CalendarEvent
-                            size="small"
-                            onClick={onClickCallback(events[1])}
-                            event={events[1]}
-                        />
+            <div className={clsx("min-w-0 w-full")}>
+                {!isFetched && (
+                    <Skeleton as="div" style={{ height: "100%" }}>
+                        <SkeletonItem style={{ height: "100%" }} />
+                    </Skeleton>
+                )}
+                {isFetched && events?.length === 1 ? <CalendarEvent event={events[0]} /> : null}
+                {isFetched && events?.length === 2 ? (
+                    <div className={clsx("flex flex-col")}>
+                        <CalendarEvent size="small" event={events[0]} />
+                        <CalendarEvent size="small" event={events[1]} />
                     </div>
                 ) : null}
-                {!isPending && events && events.length > 2 ? (
+                {isFetched && events && events.length > 2 ? (
                     <div className="flex flex-row divide-x-[1px] divide-[#d0d0d0]">
                         <div className="flex flex-col min-w-0 grow">
-                            <CalendarEvent
-                                size="small"
-                                onClick={onClickCallback(events[0])}
-                                event={events[0]}
-                            />
-                            <CalendarEvent
-                                size="small"
-                                onClick={onClickCallback(events[1])}
-                                event={events[1]}
-                            />
+                            <CalendarEvent size="small" event={events[0]} />
+                            <CalendarEvent size="small" event={events[1]} />
                         </div>
                         <div className="bg-[#f8f8f8] flex items-center px-[2px]">
                             <div className="font-semibold min-w-[22px]">+{events.length - 2}</div>
@@ -91,9 +75,9 @@ export function Day(props: Props) {
         </div>
     );
 
-    if (!isPending && events && events.length > 0 && day) {
+    if (isFetched && events && events.length > 0 && day) {
         content = (
-            <Popover withArrow openOnHover={true}>
+            <Popover withArrow openOnHover={true} mouseLeaveDelay={0}>
                 <PopoverTrigger disableButtonEnhancement>{content}</PopoverTrigger>
 
                 <PopoverSurface>

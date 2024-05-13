@@ -1,4 +1,4 @@
-import { Calendar } from "@/components/calendar";
+import { Calendar } from "../../components/calendar";
 import * as React from "react";
 
 type Props = React.ComponentProps<typeof Calendar>;
