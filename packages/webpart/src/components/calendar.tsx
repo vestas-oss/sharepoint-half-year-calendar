@@ -6,6 +6,9 @@ import { Properties } from "../types/Properties";
 import { HalfYearCalendar } from "./half-year-calendar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { FluentProvider, webLightTheme } from "@fluentui/react-components";
+import { QueryParamProvider } from "use-query-params";
+import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
+import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -49,7 +52,14 @@ export function Calendar(props: Props) {
                         sp: spfi().using(SPFx(props.context)),
                         displayMode: props.displayMode,
                     }}>
-                    <HalfYearCalendar />
+                    <HashRouter basename="/">
+                        <QueryParamProvider adapter={ReactRouter6Adapter}>
+                            <Routes>
+                                <Route path="/" element={<HalfYearCalendar />} />
+                                <Route path="*" element={<Navigate to="/" replace />} />
+                            </Routes>
+                        </QueryParamProvider>
+                    </HashRouter>
                 </SharePointContext.Provider>
             </QueryClientProvider>
         </FluentProvider>
