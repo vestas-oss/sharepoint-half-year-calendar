@@ -29,7 +29,7 @@ export function Filter(props: Props) {
     const debouncedFilter = useDebounce(filter, 500);
 
     useEffect(() => {
-        setContextFilter(debouncedFilter);
+        setContextFilter(debouncedFilter ?? "");
     }, [debouncedFilter]);
 
     if (!open) {
