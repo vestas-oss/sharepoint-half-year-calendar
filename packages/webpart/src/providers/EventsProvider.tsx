@@ -4,13 +4,17 @@ import React, { useMemo, useState } from "react";
 import { useSharePoint } from "../hooks/useSharePoint";
 import { tokens } from "@fluentui/react-components";
 import { useQuery } from "@tanstack/react-query";
+import { Event } from "../types/Event";
+import { sources as defaultSources } from "../event-sources/sources";
+import { EventSource } from "../types/EventSource";
 
 type Props = React.PropsWithChildren<{
     period: Period;
 }>;
 
 export function EventsProvider(props: Props) {
-    const { sp } = useSharePoint();
+    const context = useSharePoint();
+    const { properties, spfx } = context;
     const { children, period } = props;
     const [filter, setFilter] = useState("");
 
@@ -24,46 +28,56 @@ export function EventsProvider(props: Props) {
     const { data: events, isFetched } = useQuery({
         queryKey: ["half-year-calendar-events", period.year, period.half, filter],
         queryFn: async () => {
-            const lists = sp.web.lists;
-            // Calendar list and not hidden
-            const listsFilter = "BaseTemplate eq 106 and Hidden eq false and ItemCount gt 0";
-            const listInfos = await lists.filter(listsFilter)();
-            if (!listInfos || listInfos.length === 0) {
-                return [];
+            let sources = new Array<EventSource>();
+            const extensions = properties?.extensions?.filter((e) => e.enabled) ?? [];
+            for (const extension of extensions) {
+                if (extension.id === "81f8329d-67af-4b07-b59a-78e0120cd9ee") {
+                    sources = sources.concat(...defaultSources);
+                    continue;
+                }
+                if (spfx?.components) {
+                    try {
+                        const component = await spfx.components.loadComponentById(extension.id);
+                        sources = sources.concat(component.sources);
+                    } catch (e) {
+                        console.error(e);
+                    }
+                } else {
+                    console.warn("Skipped");
+                }
             }
-            const calendar = lists.getById(listInfos[0].Id);
+            
+            let events = new Array<Event>();
 
-            type SharePointEvent = {
-                Title: string;
-                EventDate: string;
-                EndDate: string;
-            };
-
-            let items = new Array<SharePointEvent>();
-            const isoString = (date: Date) => date.toISOString().split(".").shift() + "Z";
-            const dateFilter = (s: "Event" | "End") =>
-                `${s}Date ge datetime'${isoString(periodStart)}' and ` +
-                `${s}Date le datetime'${isoString(periodEnd)}'`;
-            // Filter: starts or ends within period
-            const calendarFilter = `(${dateFilter("Event")}) or (${dateFilter("End")})`;
-            const selects = ["Title", "EventDate", "EndDate"];
-            for await (const page of calendar.items.filter(calendarFilter).select(...selects)) {
-                items = items.concat(page);
+            if (!properties.sources) {
+                return events;
             }
 
-            let events = items
-                .map((item) => {
-                    const start = item.EventDate;
-                    const end = item.EndDate;
-                    return {
-                        title: item.Title,
-                        start: new Date(start),
-                        end: new Date(end),
-                        color: tokens.colorBrandForegroundInvertedHover,
-                    };
-                })
-                .filter((event) => event.start >= periodStart && event.end <= periodEnd)
-                .sort((a, b) => a.start.getTime() - b.start.getTime());
+            for (const source of properties.sources) {
+                const sourceDefinition = sources.find((s) => s.name === source.name);
+                if (!sourceDefinition) {
+                    continue;
+                }
+                try {
+                    const sourceEvents = await sourceDefinition.fn(
+                        context,
+                        { start: periodStart, end: periodEnd },
+                        source.properties
+                    );
+                    events = events.concat(...(sourceEvents ?? []));
+                } catch (e) {
+                    console.error(`Failed to get events from source '${source.name}'.`);
+                    console.error(e);
+                }
+            }
+
+            for (const event of events) {
+                if (!event.color) {
+                    event.color = tokens.colorBrandForegroundInvertedHover;
+                }
+            }
+
+            events.sort((a, b) => a.start.getTime() - b.start.getTime());
 
             if (filter) {
                 events = events.filter(
