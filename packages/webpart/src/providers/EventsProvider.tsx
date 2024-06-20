@@ -68,7 +68,7 @@ export function EventsProvider(props: Props) {
                         source.properties
                     );
                     sourceEvents.forEach((se) => {
-                        se.source = sourceDefinition.title;
+                        se.source = source.title;
                     });
                     events = events.concat(...(sourceEvents ?? []));
                 } catch (e) {
@@ -99,14 +99,27 @@ export function EventsProvider(props: Props) {
             const db = await create({
                 schema: {
                     title: "string",
+                    source: "string",
                 } as const,
+                components: {
+                    tokenizer: {
+                        stemming: true,
+                        stemmerSkipProperties: ["source"],
+                    },
+                },
             });
 
             await insertMultiple(db, periodEvents);
 
             const result = await search<typeof db, Event>(db, {
                 term: filter,
+                properties: ["title"],
                 limit: 5000,
+                facets: {
+                    source: {
+                        sort: "DESC",
+                    },
+                },
             });
 
             return result.hits.map((hit) => hit.document);
