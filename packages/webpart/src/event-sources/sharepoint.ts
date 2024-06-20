@@ -20,7 +20,7 @@ export const sharepoint = {
         } else {
             // Calendar list and not hidden
             const listsFilter = "BaseTemplate eq 106 and Hidden eq false and ItemCount gt 0";
-            const listInfos = await lists.filter(listsFilter)();
+            const listInfos = await lists.filter(listsFilter).orderBy("ItemCount", false)();
             if (!listInfos || listInfos.length === 0) {
                 return [];
             }
