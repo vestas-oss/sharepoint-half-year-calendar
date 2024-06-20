@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Event } from "../types/Event";
 import { sources as defaultSources } from "../event-sources/sources";
 import { EventSource } from "../types/EventSource";
+import { create, search, insertMultiple } from "@orama/orama";
 
 type Props = React.PropsWithChildren<{
     period: Period;
@@ -25,8 +26,8 @@ export function EventsProvider(props: Props) {
         };
     }, [period]);
 
-    const { data: events, isFetched } = useQuery({
-        queryKey: ["half-year-calendar-events", period.year, period.half, filter],
+    const { data: periodEvents, isFetched: isPeriodFetched } = useQuery({
+        queryKey: ["half-year-calendar-events", period.year, period.half],
         queryFn: async () => {
             let sources = new Array<EventSource>();
             const extensions = properties?.extensions?.filter((e) => e.enabled) ?? [];
@@ -79,17 +80,42 @@ export function EventsProvider(props: Props) {
 
             events.sort((a, b) => a.start.getTime() - b.start.getTime());
 
-            if (filter) {
-                events = events.filter(
-                    (event) => event.title.toLowerCase().indexOf(filter.toLowerCase()) > -1
-                );
-            }
             return events;
         },
     });
 
+    const { data: events, isFetched } = useQuery({
+        queryKey: ["half-year-calendar-events", period.year, period.half, filter],
+        queryFn: async () => {
+            if (!filter) {
+                return periodEvents;
+            }
+
+            const db = await create({
+                schema: {
+                    title: "string",
+                } as const,
+            });
+
+            await insertMultiple(db, periodEvents);
+
+            const result = await search<typeof db, Event>(db, {
+                term: filter,
+                limit: 5000,
+            });
+
+            return result.hits.map((hit) => hit.document);
+        },
+        enabled: isPeriodFetched,
+    });
+
     return (
-        <EventsContext.Provider value={{ isFetched, events: events ?? [], setFilter }}>
+        <EventsContext.Provider
+            value={{
+                isFetched: isPeriodFetched && isFetched,
+                events: events ?? [],
+                setFilter,
+            }}>
             {children}
         </EventsContext.Provider>
     );
