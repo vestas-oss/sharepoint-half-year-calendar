@@ -8,6 +8,7 @@
         "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts"],
         "outputMode": "full"
       },
+      "lint": {},
       "dev": {
         "cache": false,
         "persistent": true

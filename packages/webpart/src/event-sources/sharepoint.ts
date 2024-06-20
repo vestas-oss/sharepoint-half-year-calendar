@@ -14,7 +14,7 @@ export const sharepoint = {
         const { sp } = context;
 
         const lists = sp.web.lists;
-        let calendar: IList = undefined;
+        let calendar: IList | undefined = undefined;
         if (properties?.list) {
             calendar = lists.getByTitle(properties.list);
         } else {
