@@ -17,7 +17,8 @@ export function EventsProvider(props: Props) {
     const context = useSharePoint();
     const { properties, spfx } = context;
     const { children, period } = props;
-    const [filter, setFilter] = useState("");
+    const [filterText, setFilterText] = useState("");
+    const [filter, setFilter] = useState(false);
 
     const { periodStart, periodEnd } = useMemo(() => {
         return {
@@ -25,6 +26,17 @@ export function EventsProvider(props: Props) {
             periodEnd: new Date(period.year, period.half === "H1" ? 5 : 11, 31, 23, 59, 59),
         };
     }, [period]);
+
+    const sort = (events: Array<Event>) => {
+        events.sort((a, b) => {
+            const diff = a.start.getTime() - b.start.getTime();
+            if (diff !== 0) {
+                return diff;
+            }
+            return a.title.localeCompare(b.title);
+        });
+        return events;
+    };
 
     const { data: periodEvents, isFetched: isPeriodFetched } = useQuery({
         queryKey: ["half-year-calendar-events", period.year, period.half],
@@ -83,17 +95,20 @@ export function EventsProvider(props: Props) {
                 }
             }
 
-            events.sort((a, b) => a.start.getTime() - b.start.getTime());
+            sort(events);
 
             return events;
         },
     });
 
-    const { data: events, isFetched } = useQuery({
-        queryKey: ["half-year-calendar-events", period.year, period.half, filter],
+    const { data, isFetched } = useQuery({
+        queryKey: ["half-year-calendar-events", period.year, period.half, filterText, filter],
         queryFn: async () => {
-            if (!filter) {
-                return periodEvents;
+            if (!filterText && !filter) {
+                return { 
+                    events: periodEvents, 
+                    facets: {},
+                 };
             }
 
             const db = await create({
@@ -109,10 +124,10 @@ export function EventsProvider(props: Props) {
                 },
             });
 
-            await insertMultiple(db, periodEvents);
+            await insertMultiple(db, periodEvents ?? []);
 
             const result = await search<typeof db, Event>(db, {
-                term: filter,
+                term: filterText,
                 properties: ["title"],
                 limit: 5000,
                 facets: {
@@ -122,7 +137,10 @@ export function EventsProvider(props: Props) {
                 },
             });
 
-            return result.hits.map((hit) => hit.document);
+            const events = result.hits.map((hit) => hit.document);
+            sort(events);
+
+            return { events, facets: result.facets };
         },
         enabled: isPeriodFetched,
     });
@@ -131,8 +149,10 @@ export function EventsProvider(props: Props) {
         <EventsContext.Provider
             value={{
                 isFetched: isPeriodFetched && isFetched,
-                events: events ?? [],
+                events: data?.events ?? [],
+                setFilterText,
                 setFilter,
+                facets: data?.facets ?? {},
             }}>
             {children}
         </EventsContext.Provider>

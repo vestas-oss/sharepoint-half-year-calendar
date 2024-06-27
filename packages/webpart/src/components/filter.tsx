@@ -1,9 +1,13 @@
 import React, { useCallback, useEffect, useContext } from "react";
 import { Input, Button } from "@fluentui/react-components";
-import { Dismiss24Regular, FilterRegular } from "@fluentui/react-icons";
+import {
+    Dismiss24Regular,
+    FilterRegular,
+} from "@fluentui/react-icons";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import { EventsContext } from "../contexts/EventsContext";
 import { useDebounce } from "../hooks/useDebounce";
+import { Facet } from "./facet";
 
 type Props = {
     open: boolean;
@@ -15,7 +19,15 @@ export function Filter(props: Props) {
     const [filter, setFilter] = useQueryParam("filter", withDefault(StringParam, ""), {
         removeDefaultsFromUrl: true,
     });
-    const { setFilter: setContextFilter } = useContext(EventsContext);
+    const {
+        setFilterText: setContextFilterText,
+        setFilter: setContextFilter,
+        facets,
+    } = useContext(EventsContext);
+
+    useEffect(() => {
+        setContextFilter(open);
+    }, [open]);
 
     const onChange = (_: unknown, data: { value: string }) => {
         setFilter(data.value);
@@ -29,7 +41,7 @@ export function Filter(props: Props) {
     const debouncedFilter = useDebounce(filter, 500);
 
     useEffect(() => {
-        setContextFilter(debouncedFilter ?? "");
+        setContextFilterText(debouncedFilter ?? "");
     }, [debouncedFilter]);
 
     if (!open) {
@@ -47,14 +59,7 @@ export function Filter(props: Props) {
                 onChange={onChange}
             />
             <div>
-                {/* WIP
-                <Button
-                    appearance="subtle"
-                    aria-label="Close"
-                    icon={<ChevronDownRegular />}
-                    iconPosition="after">
-                    Types
-                </Button> */}
+                {"source" in (facets ?? {}) ? <Facet facet={facets.source} title="Source" /> : null}
                 <Button
                     appearance="subtle"
                     aria-label="Close"
