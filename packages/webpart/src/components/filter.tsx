@@ -1,10 +1,7 @@
 import React, { useCallback, useEffect, useContext } from "react";
 import { Input, Button } from "@fluentui/react-components";
-import {
-    Dismiss24Regular,
-    FilterRegular,
-} from "@fluentui/react-icons";
-import { StringParam, useQueryParam, withDefault } from "use-query-params";
+import { Dismiss24Regular, FilterRegular } from "@fluentui/react-icons";
+import { JsonParam, StringParam, useQueryParam, withDefault } from "use-query-params";
 import { EventsContext } from "../contexts/EventsContext";
 import { useDebounce } from "../hooks/useDebounce";
 import { Facet } from "./facet";
@@ -19,14 +16,29 @@ export function Filter(props: Props) {
     const [filter, setFilter] = useQueryParam("filter", withDefault(StringParam, ""), {
         removeDefaultsFromUrl: true,
     });
+    const [queryParamFacets, setQueryParamFacets] = useQueryParam<Record<string, Array<string>>>(
+        "facets",
+        withDefault(JsonParam, {}),
+        {
+            removeDefaultsFromUrl: true,
+        }
+    );
+
+    const setQueryParamFacetsValue = useCallback((key: string, values: Array<string>) => {
+        const facets = Object.assign({}, queryParamFacets);
+        facets[key] = values;
+        setQueryParamFacets(facets);
+    }, [queryParamFacets, setQueryParamFacets]);
+
     const {
         setFilterText: setContextFilterText,
-        setFilter: setContextFilter,
+        setFilterOpen: setContextFilterOpen,
+        setSelectedFacets: setContextSelectedFacets,
         facets,
     } = useContext(EventsContext);
 
     useEffect(() => {
-        setContextFilter(open);
+        setContextFilterOpen(open);
     }, [open]);
 
     const onChange = (_: unknown, data: { value: string }) => {
@@ -35,6 +47,7 @@ export function Filter(props: Props) {
 
     const onCloseCallback = useCallback(() => {
         setFilter("");
+        setQueryParamFacets({});
         onClose();
     }, [onClose]);
 
@@ -43,6 +56,10 @@ export function Filter(props: Props) {
     useEffect(() => {
         setContextFilterText(debouncedFilter ?? "");
     }, [debouncedFilter]);
+
+    useEffect(() => {
+        setContextSelectedFacets(queryParamFacets);
+    }, [queryParamFacets])
 
     if (!open) {
         return null;
@@ -59,7 +76,15 @@ export function Filter(props: Props) {
                 onChange={onChange}
             />
             <div>
-                {"source" in (facets ?? {}) ? <Facet facet={facets.source} title="Source" /> : null}
+                {Object.entries(facets ?? {}).map(([key, value]) => (
+                    <Facet
+                        key={key}
+                        facet={value}
+                        title={key}
+                        values={queryParamFacets[key]}
+                        setValues={setQueryParamFacetsValue}
+                    />
+                ))}
                 <Button
                     appearance="subtle"
                     aria-label="Close"

@@ -1,8 +1,12 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Button, Checkbox } from "@fluentui/react-components";
 import { ChevronDownRegular, DismissRegular } from "@fluentui/react-icons";
 import { Popover, PopoverSurface, PopoverTrigger } from "@fluentui/react-components";
-import type { OpenPopoverEvents, OnOpenChangeData } from "@fluentui/react-components";
+import type {
+    OpenPopoverEvents,
+    OnOpenChangeData,
+    CheckboxOnChangeData,
+} from "@fluentui/react-components";
 
 type Props = {
     facet: {
@@ -10,10 +14,12 @@ type Props = {
         values: Record<string, number>;
     };
     title: string;
+    values: Array<string>;
+    setValues: (key: string, values: Array<string>) => void;
 };
 
 export function Facet(props: Props) {
-    const { facet, title } = props;
+    const { facet, title, values, setValues } = props;
     const [open, setOpen] = React.useState(false);
 
     const onOpenChange = useCallback(
@@ -25,21 +31,54 @@ export function Facet(props: Props) {
 
     const onClearClick = useCallback(() => {
         setOpen(false);
+        setValues(title, []);
     }, []);
 
+    const onChange = useCallback(
+        (ev: React.ChangeEvent<HTMLInputElement>, data: CheckboxOnChangeData) => {
+            const value = ev.target.dataset["value"];
+            if (data.checked) {
+                // Add
+                const exists = (values ?? []).find((v) => v === value);
+                if (!exists) {
+                    setValues(title, (values ?? []).concat(value));
+                }
+                return;
+            }
+            // Remove
+            setValues(
+                title,
+                (values ?? []).filter((v) => v !== value)
+            );
+        },
+        [values, setValues]
+    );
+
+    const buttonTitle = useMemo(() => {
+        if (!values || values.length === 0) {
+            return title;
+        }
+        if (values.length === 1) {
+            return values[0];
+        }
+        return `${values[0]} (+${values.length - 1})`;
+    }, [values, title]);
+
+    // If only one selectable value, ignore
     if (Object.keys(facet.values).length < 2) {
         return null;
     }
 
     return (
-        <Popover positioning={"below-end"} open={open} onOpenChange={onOpenChange}>
+        <Popover positioning="below-end" open={open} onOpenChange={onOpenChange}>
             <PopoverTrigger disableButtonEnhancement>
                 <Button
                     appearance="subtle"
                     aria-label="Close"
                     icon={<ChevronDownRegular />}
-                    iconPosition="after">
-                    {title}
+                    iconPosition="after"
+                    className="capitalize">
+                    {buttonTitle}
                 </Button>
             </PopoverTrigger>
 
@@ -48,8 +87,12 @@ export function Facet(props: Props) {
                     <div>
                         {Object.entries(facet.values).map(([key, value]) => (
                             <div key={key}>
-                                {/* TODO: handle onChange */}
-                                <Checkbox label={`${key} (${value})`} />
+                                <Checkbox
+                                    label={`${key} (${value})`}
+                                    data-value={key}
+                                    checked={(values ?? []).find((v) => v === key) !== undefined}
+                                    onChange={onChange}
+                                />
                             </div>
                         ))}
                     </div>

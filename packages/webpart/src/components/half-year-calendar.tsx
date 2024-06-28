@@ -1,11 +1,7 @@
 import { ToolbarButton } from "@fluentui/react-components";
 import React, { useCallback, useState } from "react";
 import { Month } from "./month";
-import {
-    ArrowDownRegular,
-    ArrowUpRegular,
-    FilterRegular,
-} from "@fluentui/react-icons";
+import { ArrowDownRegular, ArrowUpRegular, FilterRegular } from "@fluentui/react-icons";
 import { EventsProvider } from "../providers/EventsProvider";
 import { Period } from "../types/Period";
 import { Filter } from "./filter";
@@ -53,7 +49,9 @@ export function HalfYearCalendar() {
         });
     }, []);
 
-    const [filterOpen, setFilterOpen] = React.useState(window.location.hash.indexOf("filter") > -1);
+    const [filterOpen, setFilterOpen] = React.useState(
+        window.location.hash.indexOf("filter") > -1 || window.location.hash.indexOf("facets") > -1
+    );
 
     return (
         <div className="flex w-full flex-col">

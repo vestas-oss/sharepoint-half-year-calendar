@@ -18,7 +18,8 @@ export function EventsProvider(props: Props) {
     const { properties, spfx } = context;
     const { children, period } = props;
     const [filterText, setFilterText] = useState("");
-    const [filter, setFilter] = useState(false);
+    const [filterOpen, setFilterOpen] = useState(false);
+    const [selectedFacets, setSelectedFacets] = useState<Record<string, Array<string>>>();
 
     const { periodStart, periodEnd } = useMemo(() => {
         return {
@@ -45,6 +46,7 @@ export function EventsProvider(props: Props) {
             // Load extensions
             const extensions = properties?.extensions?.filter((e) => e.enabled) ?? [];
             for (const extension of extensions) {
+                // If extension is this manifest id
                 if (extension.id === "81f8329d-67af-4b07-b59a-78e0120cd9ee") {
                     sources = sources.concat(...defaultSources);
                     continue;
@@ -102,13 +104,20 @@ export function EventsProvider(props: Props) {
     });
 
     const { data, isFetched } = useQuery({
-        queryKey: ["half-year-calendar-events", period.year, period.half, filterText, filter],
+        queryKey: [
+            "half-year-calendar-events",
+            period.year,
+            period.half,
+            filterText,
+            filterOpen,
+            selectedFacets,
+        ],
         queryFn: async () => {
-            if (!filterText && !filter) {
-                return { 
-                    events: periodEvents, 
+            if (!filterText && !filterOpen) {
+                return {
+                    events: periodEvents,
                     facets: {},
-                 };
+                };
             }
 
             const db = await create({
@@ -137,7 +146,19 @@ export function EventsProvider(props: Props) {
                 },
             });
 
-            const events = result.hits.map((hit) => hit.document);
+            let events = result.hits.map((hit) => hit.document);
+
+            // Apply selected facets
+            Object.entries(selectedFacets ?? {}).forEach(([key, value]) => {
+                if (!value || value.length === 0) {
+                    return;
+                }
+                events = events.filter((event) => {
+                    const include = value.find((v) => v === event[key]) !== undefined;
+                    return include;
+                });
+            });
+
             sort(events);
 
             return { events, facets: result.facets };
@@ -150,9 +171,10 @@ export function EventsProvider(props: Props) {
             value={{
                 isFetched: isPeriodFetched && isFetched,
                 events: data?.events ?? [],
-                setFilterText,
-                setFilter,
                 facets: data?.facets ?? {},
+                setFilterText,
+                setFilterOpen,
+                setSelectedFacets,
             }}>
             {children}
         </EventsContext.Provider>

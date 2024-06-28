@@ -6,14 +6,16 @@ type EventsContext = {
     isFetched: boolean;
     events: Array<Event>;
     facets: FacetResult;
-    setFilterText: (filterText: string) => void,
-    setFilter: (filter: boolean) => void,
+    setFilterText: (filterText: string) => void;
+    setFilterOpen: (open: boolean) => void;
+    setSelectedFacets: (facets: Record<string, Array<string>>) => void
 };
 
 export const EventsContext = createContext<EventsContext>({
     isFetched: false,
     events: [],
+    facets: {},
     setFilterText: () => { },
-    setFilter: () => { },
-    facets: {}
+    setFilterOpen: () => { },
+    setSelectedFacets: () => { },
 });
