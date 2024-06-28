@@ -12,8 +12,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "msw-sp": "^1.4.0",
-    "next": "^14.2.3",
+    "msw-sp": "^1.6.0",
+    "next": "^14.2.4",
     "react": "^18",
     "react-dom": "^18",
     "sp-workbench": "^1.2.0"
