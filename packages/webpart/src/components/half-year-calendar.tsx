@@ -1,5 +1,5 @@
 import { ToolbarButton } from "@fluentui/react-components";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Month } from "./month";
 import { ArrowDownRegular, ArrowUpRegular, FilterRegular } from "@fluentui/react-icons";
 import { EventsProvider } from "../providers/EventsProvider";
@@ -53,6 +53,15 @@ export function HalfYearCalendar() {
         window.location.hash.indexOf("filter") > -1 || window.location.hash.indexOf("facets") > -1
     );
 
+    const onFilterToggle = useCallback(() => {
+        setFilterOpen((prev) => !prev);
+    }, [setFilterOpen]);
+
+    useEffect(() => {
+        // When period changes, close filter
+        setFilterOpen(false);
+    }, [period, setFilterOpen]);
+
     return (
         <div className="flex w-full flex-col">
             <div className="flex flex-row pb-1 justify-between">
@@ -82,12 +91,12 @@ export function HalfYearCalendar() {
                     <ToolbarButton
                         icon={<FilterRegular />}
                         title="Filter"
-                        onClick={() => setFilterOpen(!filterOpen)}
+                        onClick={onFilterToggle}
                     />
                 </div>
             </div>
             <EventsProvider period={period}>
-                <Filter open={filterOpen} onClose={() => setFilterOpen(!filterOpen)} />
+                <Filter open={filterOpen} onClose={onFilterToggle} />
                 <div className="flex border-2 border-[#d0d0d0] divide-x-2 divide-[#d0d0d0]">
                     {Array.from({ length: 6 }).map((_, i) => {
                         const month = i + (period.half === "H2" ? 6 : 0);

@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useContext } from "react";
+import React, { useCallback, useEffect, useContext, useMemo, useState } from "react";
 import { Input, Button } from "@fluentui/react-components";
 import { Dismiss24Regular, FilterRegular } from "@fluentui/react-icons";
-import { JsonParam, StringParam, useQueryParam, withDefault } from "use-query-params";
+import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import { EventsContext } from "../contexts/EventsContext";
 import { useDebounce } from "../hooks/useDebounce";
 import { Facet } from "./facet";
@@ -16,19 +16,40 @@ export function Filter(props: Props) {
     const [filter, setFilter] = useQueryParam("filter", withDefault(StringParam, ""), {
         removeDefaultsFromUrl: true,
     });
-    const [queryParamFacets, setQueryParamFacets] = useQueryParam<Record<string, Array<string>>>(
+
+    const defaultFacets = useMemo(() => {
+        return "";
+    }, []);
+
+    const [queryParamFacetsParam, setQueryParamFacetsParam] = useQueryParam<string>(
         "facets",
-        withDefault(JsonParam, {}),
+        // July 2024 NOTE: JsonParam seems to generate new objects, hence wrap in string
+        withDefault(StringParam, defaultFacets),
         {
             removeDefaultsFromUrl: true,
         }
     );
 
-    const setQueryParamFacetsValue = useCallback((key: string, values: Array<string>) => {
-        const facets = Object.assign({}, queryParamFacets);
-        facets[key] = values;
-        setQueryParamFacets(facets);
-    }, [queryParamFacets, setQueryParamFacets]);
+    const [queryParamFacets, setQueryParamFacets] = useState<Record<string, Array<string>>>(
+        queryParamFacetsParam ? JSON.parse(queryParamFacetsParam) : undefined
+    );
+
+    useEffect(() => {
+        if (queryParamFacets && Object.keys(queryParamFacets).length > 0) {
+            setQueryParamFacetsParam(JSON.stringify(queryParamFacets));
+        } else {
+            setQueryParamFacetsParam(defaultFacets);
+        }
+    }, [queryParamFacets]);
+
+    const setQueryParamFacetsValue = useCallback(
+        (key: string, values: Array<string>) => {
+            const facets = Object.assign({}, queryParamFacets);
+            facets[key] = values;
+            setQueryParamFacets(facets);
+        },
+        [queryParamFacets, setQueryParamFacets]
+    );
 
     const {
         setFilterText: setContextFilterText,
@@ -38,6 +59,10 @@ export function Filter(props: Props) {
     } = useContext(EventsContext);
 
     useEffect(() => {
+        if (!open) {
+            setFilter("");
+            setQueryParamFacets({});
+        }
         setContextFilterOpen(open);
     }, [open]);
 
@@ -46,10 +71,8 @@ export function Filter(props: Props) {
     };
 
     const onCloseCallback = useCallback(() => {
-        setFilter("");
-        setQueryParamFacets({});
         onClose();
-    }, [onClose]);
+    }, [onClose, setQueryParamFacets, setFilter]);
 
     const debouncedFilter = useDebounce(filter, 500);
 
@@ -59,7 +82,7 @@ export function Filter(props: Props) {
 
     useEffect(() => {
         setContextSelectedFacets(queryParamFacets);
-    }, [queryParamFacets])
+    }, [queryParamFacets]);
 
     if (!open) {
         return null;
@@ -81,7 +104,7 @@ export function Filter(props: Props) {
                         key={key}
                         facet={value}
                         title={key}
-                        values={queryParamFacets[key]}
+                        values={queryParamFacets ? queryParamFacets[key] : []}
                         setValues={setQueryParamFacetsValue}
                     />
                 ))}

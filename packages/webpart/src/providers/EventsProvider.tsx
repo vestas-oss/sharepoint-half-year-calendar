@@ -19,7 +19,7 @@ export function EventsProvider(props: Props) {
     const { children, period } = props;
     const [filterText, setFilterText] = useState("");
     const [filterOpen, setFilterOpen] = useState(false);
-    const [selectedFacets, setSelectedFacets] = useState<Record<string, Array<string>>>();
+    const [selectedFacets, setSelectedFacets] = useState<Record<keyof Event, Array<string>>>();
 
     const { periodStart, periodEnd } = useMemo(() => {
         return {
@@ -34,7 +34,7 @@ export function EventsProvider(props: Props) {
             if (diff !== 0) {
                 return diff;
             }
-            return a.title.localeCompare(b.title);
+            return (a.title ?? "").localeCompare(b.title ?? "");
         });
         return events;
     };
@@ -56,6 +56,9 @@ export function EventsProvider(props: Props) {
                         const component = await spfx.components.loadComponentById(extension.id);
                         sources = sources.concat(component.sources);
                     } catch (e) {
+                        console.log(
+                            `half-year-calendar-webpart: failed to load component id '${extension.id}':`
+                        );
                         console.error(e);
                     }
                 } else {
@@ -103,14 +106,14 @@ export function EventsProvider(props: Props) {
         },
     });
 
-    const { data, isFetched } = useQuery({
+    const { data, isFetched: isDataFetched } = useQuery({
         queryKey: [
             "half-year-calendar-events",
             period.year,
             period.half,
             filterText,
             filterOpen,
-            selectedFacets,
+            JSON.stringify(selectedFacets ?? {}),
         ],
         queryFn: async () => {
             if (!filterText && !filterOpen) {
@@ -154,7 +157,8 @@ export function EventsProvider(props: Props) {
                     return;
                 }
                 events = events.filter((event) => {
-                    const include = value.find((v) => v === event[key]) !== undefined;
+                    const include =
+                        value.find((v) => v === event[key as keyof Event]) !== undefined;
                     return include;
                 });
             });
@@ -166,12 +170,25 @@ export function EventsProvider(props: Props) {
         enabled: isPeriodFetched,
     });
 
+    const defaultEvents = useMemo(() => {
+        return [];
+    }, []);
+
+    const defaultFacets = useMemo(() => {
+        return {};
+    }, []);
+
+    const isFetched = useMemo(() => {
+        return isPeriodFetched && isDataFetched;
+    }, [isPeriodFetched, isDataFetched]);
+
     return (
         <EventsContext.Provider
             value={{
-                isFetched: isPeriodFetched && isFetched,
-                events: data?.events ?? [],
-                facets: data?.facets ?? {},
+                isFetched,
+                events: data?.events ?? defaultEvents,
+                facets: data?.facets ?? defaultFacets,
+                period,
                 setFilterText,
                 setFilterOpen,
                 setSelectedFacets,

@@ -36,7 +36,10 @@ export function Facet(props: Props) {
 
     const onChange = useCallback(
         (ev: React.ChangeEvent<HTMLInputElement>, data: CheckboxOnChangeData) => {
-            const value = ev.target.dataset["value"];
+            const value = ev.target.dataset.value;
+            if (!value) {
+                return;
+            }
             if (data.checked) {
                 // Add
                 const exists = (values ?? []).find((v) => v === value);
@@ -70,7 +73,7 @@ export function Facet(props: Props) {
     }
 
     return (
-        <Popover positioning="below-end" open={open} onOpenChange={onOpenChange}>
+        <Popover positioning="below-end" open={open} onOpenChange={onOpenChange} inline={true}>
             <PopoverTrigger disableButtonEnhancement>
                 <Button
                     appearance="subtle"
