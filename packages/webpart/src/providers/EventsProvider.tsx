@@ -23,8 +23,15 @@ export function EventsProvider(props: Props) {
 
     const { periodStart, periodEnd } = useMemo(() => {
         return {
-            periodStart: new Date(period.year, period.half === "H1" ? 0 : 5, 1),
-            periodEnd: new Date(period.year, period.half === "H1" ? 5 : 11, 31, 23, 59, 59),
+            periodStart: new Date(period.year, period.half === "H1" ? 0 : 6, 1),
+            periodEnd: new Date(
+                period.year,
+                period.half === "H1" ? 5 : 11,
+                period.half === "H1" ? 30 : 31,
+                23,
+                59,
+                59
+            ),
         };
     }, [period]);
 

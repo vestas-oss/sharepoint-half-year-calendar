@@ -95,6 +95,7 @@ export function Facet(props: Props) {
                                     data-value={key}
                                     checked={(values ?? []).find((v) => v === key) !== undefined}
                                     onChange={onChange}
+                                    className="text-slate-600"
                                 />
                             </div>
                         ))}
