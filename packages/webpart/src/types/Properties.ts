@@ -19,4 +19,5 @@ export type EventSource = {
 export type Properties = Partial<{
     sources: Array<EventSource>;
     extensions: Array<Extension>;
+    facets: Array<string>;
 }>;

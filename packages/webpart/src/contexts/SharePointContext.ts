@@ -1,5 +1,5 @@
 import { DisplayMode } from "../types/DisplayMode";
-import { SPFI, spfi } from "@pnp/sp";
+import { SPFI, SPFx, spfi } from "@pnp/sp";
 import { createContext } from "react";
 import { Properties } from "../types/Properties";
 import type { GraphRequest, Client } from '@microsoft/microsoft-graph-client';
@@ -18,11 +18,23 @@ type SharePointContext = {
                 get client(): Client;
             }>
         }
-    }
+    },
+    context: Parameters<typeof SPFx>[0],
 };
 
 export const SharePointContext = createContext<SharePointContext>({
     sp: spfi().using(),
     displayMode: DisplayMode.Read,
     properties: {},
+    context: {
+        pageContext: {
+            web: {
+                absoluteUrl: ""
+            },
+            legacyPageContext: {
+                formDigestTimeoutSeconds: 0,
+                formDigestValue: ""
+            }
+        }
+    },
 });

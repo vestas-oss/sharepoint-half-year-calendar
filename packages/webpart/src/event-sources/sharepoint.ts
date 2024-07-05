@@ -10,6 +10,7 @@ type Properties = {
 export const sharepoint = {
     name: "sharepoint",
     title: "SharePoint List",
+    isDefault: true as const,
     fn: async (context: ReturnType<typeof useSharePoint>, query: { start: Date, end: Date }, properties?: Properties): Promise<Array<Event>> => {
         const { sp } = context;
 

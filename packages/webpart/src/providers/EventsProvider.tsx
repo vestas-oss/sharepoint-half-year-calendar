@@ -14,8 +14,8 @@ type Props = React.PropsWithChildren<{
 }>;
 
 export function EventsProvider(props: Props) {
-    const context = useSharePoint();
-    const { properties, spfx } = context;
+    const sharePointContext = useSharePoint();
+    const { properties, spfx, context } = sharePointContext;
     const { children, period } = props;
     const [filterText, setFilterText] = useState("");
     const [filterOpen, setFilterOpen] = useState(false);
@@ -73,33 +73,45 @@ export function EventsProvider(props: Props) {
                 }
             }
 
-            let events = new Array<Event>();
-
             if (!properties.sources) {
-                return events;
+                return new Array<Event>();
             }
 
             // Loop sources
-            for (const source of properties.sources) {
+            const promises = properties.sources.map(async (source) => {
                 const sourceDefinition = sources.find((s) => s.name === source.name);
                 if (!sourceDefinition) {
-                    continue;
+                    return [];
                 }
+
                 try {
-                    const sourceEvents = await sourceDefinition.fn(
-                        context,
-                        { start: periodStart, end: periodEnd },
-                        source.properties
-                    );
+                    let sourceEvents = new Array<Event>();
+                    if ("isDefault" in sourceDefinition) {
+                        sourceEvents = await sourceDefinition.fn(
+                            sharePointContext,
+                            { start: periodStart, end: periodEnd },
+                            source.properties
+                        );
+                    } else {
+                        sourceEvents = await sourceDefinition.fn(
+                            context,
+                            { start: periodStart, end: periodEnd },
+                            source.properties
+                        );
+                    }
                     sourceEvents.forEach((se) => {
                         se.source = source.title;
                     });
-                    events = events.concat(...(sourceEvents ?? []));
+                    return sourceEvents ?? [];
                 } catch (e) {
                     console.error(`Failed to get events from source '${source.name}'.`);
                     console.error(e);
                 }
-            }
+                return [];
+            });
+
+            const sourcesEvents = await Promise.all(promises);
+            const events = sourcesEvents.reduce((a, b) => a.concat(b), new Array<Event>());
 
             for (const event of events) {
                 if (!event.color) {
@@ -130,15 +142,32 @@ export function EventsProvider(props: Props) {
                 };
             }
 
+            const schema = {
+                title: "string",
+                source: "string",
+            } as const;
+            const stemmerSkipProperties = ["source"];
+
+            const facets = {
+                source: {
+                    sort: "DESC" as const,
+                },
+            };
+
+            (properties.facets ?? []).forEach((facet) => {
+                schema[facet] = "string";
+                stemmerSkipProperties.push(facet);
+                facets[facet] = {
+                    sort: "DESC" as const,
+                };
+            });
+
             const db = await create({
-                schema: {
-                    title: "string",
-                    source: "string",
-                } as const,
+                schema,
                 components: {
                     tokenizer: {
                         stemming: true,
-                        stemmerSkipProperties: ["source"],
+                        stemmerSkipProperties,
                     },
                 },
             });
@@ -149,11 +178,7 @@ export function EventsProvider(props: Props) {
                 term: filterText,
                 properties: ["title"],
                 limit: 5000,
-                facets: {
-                    source: {
-                        sort: "DESC",
-                    },
-                },
+                facets,
             });
 
             let events = result.hits.map((hit) => hit.document);
@@ -165,14 +190,26 @@ export function EventsProvider(props: Props) {
                 }
                 events = events.filter((event) => {
                     const include =
-                        value.find((v) => v === event[key as keyof Event]) !== undefined;
+                        value.find((v) => {
+                            if (v === "") {
+                                return (
+                                    v === event[key as keyof Event] ||
+                                    undefined === event[key as keyof Event] ||
+                                    null === event[key as keyof Event]
+                                );
+                            }
+                            return v === event[key as keyof Event];
+                        }) !== undefined;
                     return include;
                 });
             });
 
             sort(events);
 
-            return { events, facets: result.facets };
+            return {
+                events,
+                facets: result.facets,
+            };
         },
         enabled: isPeriodFetched,
     });

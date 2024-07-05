@@ -46,17 +46,18 @@ type Props = {
 };
 
 export function Calendar(props: Props) {
-    const { displayMode, properties, spfx } = props;
+    const { displayMode, properties, spfx, context } = props;
 
     return (
         <FluentProvider theme={webLightTheme}>
             <QueryClientProvider client={queryClient}>
                 <SharePointContext.Provider
                     value={{
-                        sp: spfi().using(SPFx(props.context)),
+                        sp: spfi().using(SPFx(context)),
                         displayMode,
                         properties,
                         spfx,
+                        context,
                     }}>
                     <EditMode />
                     <HashRouter basename="/">

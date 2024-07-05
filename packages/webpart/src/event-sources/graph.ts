@@ -25,6 +25,7 @@ type GraphEvent = {
 export const graph = {
     name: "graph",
     title: "Graph Calendar",
+    isDefault: true as const,
     fn: async (context: ReturnType<typeof useSharePoint>, query: { start: Date, end: Date }, properties?: Properties): Promise<Array<Event>> => {
         const { spfx } = context;
 

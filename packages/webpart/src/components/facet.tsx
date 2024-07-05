@@ -37,7 +37,7 @@ export function Facet(props: Props) {
     const onChange = useCallback(
         (ev: React.ChangeEvent<HTMLInputElement>, data: CheckboxOnChangeData) => {
             const value = ev.target.dataset.value;
-            if (!value) {
+            if (value === undefined) {
                 return;
             }
             if (data.checked) {
@@ -62,9 +62,9 @@ export function Facet(props: Props) {
             return title;
         }
         if (values.length === 1) {
-            return values[0];
+            return values[0] || "(Empty)";
         }
-        return `${values[0]} (+${values.length - 1})`;
+        return `${values[0] || "(Empty)"} (+${values.length - 1})`;
     }, [values, title]);
 
     // If only one selectable value, ignore
@@ -88,17 +88,21 @@ export function Facet(props: Props) {
             <PopoverSurface tabIndex={-1}>
                 <div className="flex flex-col items-end">
                     <div>
-                        {Object.entries(facet.values).map(([key, value]) => (
-                            <div key={key}>
-                                <Checkbox
-                                    label={`${key} (${value})`}
-                                    data-value={key}
-                                    checked={(values ?? []).find((v) => v === key) !== undefined}
-                                    onChange={onChange}
-                                    className="text-slate-600"
-                                />
-                            </div>
-                        ))}
+                        {Object.entries(facet.values).map(([key, value]) => {
+                            return (
+                                <div key={key}>
+                                    <Checkbox
+                                        label={`${key || "(Empty)"} (${value})`}
+                                        data-value={key}
+                                        checked={
+                                            (values ?? []).find((v) => v === key) !== undefined
+                                        }
+                                        onChange={onChange}
+                                        className="text-slate-600"
+                                    />
+                                </div>
+                            );
+                        })}
                     </div>
                     <div>
                         <Button

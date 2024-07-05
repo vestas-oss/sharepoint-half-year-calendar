@@ -20,7 +20,7 @@
         "@microsoft/sp-property-pane": "^1.19.0",
         "@microsoft/sp-webpart-base": "^1.19.0",
         "@orama/orama": "^2.0.21",
-        "@pnp/sp": "^4.0.1",
+        "@pnp/sp": "^4.2.0",
         "@tanstack/react-query": "^4.36.1",
         "clsx": "^2.1.1",
         "dayjs": "^1.11.11",
