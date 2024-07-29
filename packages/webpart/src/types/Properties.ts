@@ -16,8 +16,13 @@ export type EventSource = {
     properties?: any;
 }
 
+export type Facet = {
+    property: string;
+    title: string;
+}
+
 export type Properties = Partial<{
     sources: Array<EventSource>;
     extensions: Array<Extension>;
-    facets: Array<string>;
+    facets: Array<string | Facet>;
 }>;

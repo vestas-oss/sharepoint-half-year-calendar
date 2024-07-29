@@ -14,7 +14,9 @@ export function CalendarEvent(props: Props) {
     let content = (
         <div
             style={{ backgroundColor: color }}
-            className={clsx(`h-full w-full p-[2px]`, "flex items-center")}
+            className={clsx(`h-full w-full p-[2px]`, "flex items-center", {
+                "cursor-default": !event.link,
+            })}
             title={title}>
             <div className="truncate px-[2px] text-xs font-semibold">{title}</div>
         </div>
@@ -23,7 +25,13 @@ export function CalendarEvent(props: Props) {
     if (size === "small") {
         content = (
             <div style={{ backgroundColor: color }} title={title}>
-                <div className="truncate h-[13px] px-[2px] text-[10px] leading-tight font-semibold">
+                <div
+                    className={clsx(
+                        "truncate h-[13px] px-[2px] text-[10px] leading-tight font-semibold",
+                        {
+                            "cursor-default": !event.link,
+                        }
+                    )}>
                     {title}
                 </div>
             </div>
@@ -37,5 +45,6 @@ export function CalendarEvent(props: Props) {
             </a>
         );
     }
-    return <div className="cursor-default">{content}</div>;
+
+    return content;
 }

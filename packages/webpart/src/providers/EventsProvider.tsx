@@ -155,9 +155,15 @@ export function EventsProvider(props: Props) {
             };
 
             (properties.facets ?? []).forEach((facet) => {
-                schema[facet] = "string";
-                stemmerSkipProperties.push(facet);
-                facets[facet] = {
+                let facetProperty = "";
+                if (typeof facet === "string") {
+                    facetProperty = facet;
+                } else {
+                    facetProperty = facet.property;
+                }
+                schema[facetProperty] = "string";
+                stemmerSkipProperties.push(facetProperty);
+                facets[facetProperty] = {
                     sort: "DESC" as const,
                 };
             });

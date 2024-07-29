@@ -5,6 +5,7 @@ import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import { EventsContext } from "../contexts/EventsContext";
 import { useDebounce } from "../hooks/useDebounce";
 import { Facet } from "./facet";
+import { useSharePoint } from "../hooks/useSharePoint";
 
 type Props = {
     open: boolean;
@@ -84,6 +85,8 @@ export function Filter(props: Props) {
         setContextSelectedFacets(queryParamFacets);
     }, [queryParamFacets]);
 
+    const { properties } = useSharePoint();
+
     if (!open) {
         return null;
     }
@@ -99,15 +102,26 @@ export function Filter(props: Props) {
                 onChange={onChange}
             />
             <div>
-                {Object.entries(facets ?? {}).map(([key, value]) => (
-                    <Facet
-                        key={key}
-                        facet={value}
-                        title={key}
-                        values={queryParamFacets ? queryParamFacets[key] : []}
-                        setValues={setQueryParamFacetsValue}
-                    />
-                ))}
+                {Object.entries(facets ?? {}).map(([key, value]) => {
+                    let title = key;
+
+                    const f = properties?.facets?.find(
+                        (f) => typeof f === "object" && f.property === key
+                    );
+                    if (typeof f === "object") {
+                        title = f.title;
+                    }
+
+                    return (
+                        <Facet
+                            key={key}
+                            facet={value}
+                            title={title}
+                            values={queryParamFacets ? queryParamFacets[key] : []}
+                            setValues={setQueryParamFacetsValue}
+                        />
+                    );
+                })}
                 <Button
                     appearance="subtle"
                     aria-label="Close"
