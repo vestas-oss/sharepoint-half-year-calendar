@@ -142,13 +142,13 @@ export function EventsProvider(props: Props) {
                 };
             }
 
-            const schema = {
+            const schema: { [key: string]: "string" } = {
                 title: "string",
                 source: "string",
             } as const;
             const stemmerSkipProperties = ["source"];
 
-            const facets = {
+            const facets: { [key: string]: { sort: "DESC" } } = {
                 source: {
                     sort: "DESC" as const,
                 },

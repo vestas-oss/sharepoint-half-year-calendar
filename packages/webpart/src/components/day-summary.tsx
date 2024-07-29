@@ -55,6 +55,7 @@ export function DaySummary(props: Props) {
                 end: formatTime(event.end),
                 title: event.title,
                 color: event.color,
+                link: event.link,
             };
         });
     }, [events]);
@@ -67,17 +68,34 @@ export function DaySummary(props: Props) {
             </div>
 
             <div>
-                {formatEvents.map((event, index) => (
-                    <div
-                        key={`event-${index}`}
-                        className="p-2 m-2 min-w-72"
-                        style={{ backgroundColor: event.color }}>
-                        <div className="font-semibold">{event.title}</div>
-                        <div>
-                            {event.start} - {event.end}
+                {formatEvents.map((event, index) => {
+                    const content = (
+                        <div
+                            key={`event-${index}`}
+                            className="p-2 m-2 min-w-72"
+                            style={{ backgroundColor: event.color }}>
+                            <div className="font-semibold">{event.title}</div>
+                            <div>
+                                {event.start} - {event.end}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+
+                    if (event.link) {
+                        return (
+                            <a
+                                href={event.link}
+                                key={`event-link-${index}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                data-interception="off">
+                                {content}
+                            </a>
+                        );
+                    }
+
+                    return content;
+                })}
             </div>
         </div>
     );

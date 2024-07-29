@@ -1,4 +1,5 @@
 import { IList } from "@pnp/sp/lists";
+import "@pnp/sp/forms";
 import { useSharePoint } from "../hooks/useSharePoint";
 import { Event } from "../types/Event";
 
@@ -29,6 +30,7 @@ export const sharepoint = {
         }
 
         type SharePointEvent = {
+            ID: number;
             Title: string;
             EventDate: string;
             EndDate: string;
@@ -41,20 +43,25 @@ export const sharepoint = {
             `${s}Date le datetime'${isoString(query.end)}'`;
         // Filter: starts or ends within period
         const calendarFilter = `(${dateFilter("Event")}) or (${dateFilter("End")})`;
-        const selects = ["Title", "EventDate", "EndDate"];
+        const selects = ["ID", "Title", "EventDate", "EndDate"];
         for await (const page of calendar.items.filter(calendarFilter).select(...selects)) {
             items = items.concat(page);
         }
+
+        const forms = await calendar.forms.filter("FormType eq 4")();
+        const formUrl = forms[0]?.ServerRelativeUrl;
 
         const events = items
             .map((item) => {
                 const start = item.EventDate;
                 const end = item.EndDate;
+                const link = formUrl ? `${formUrl}?ID=${item.ID}&Source=${encodeURI(window.location.href)}` : undefined;
                 return {
                     title: item.Title,
                     start: new Date(start),
                     end: new Date(end),
                     color: properties?.color,
+                    link,
                 };
             });
 

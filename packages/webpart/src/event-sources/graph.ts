@@ -39,8 +39,9 @@ export const graph = {
         const dateFilter = (s: "start" | "end") =>
             `${s}/dateTime ge '${query.start.toISOString()}' and ${s}/dateTime le '${query.end.toISOString()}'`;
 
+        const path = "/me/calendar/events";
         const filter = `(${dateFilter("start")}) or (${dateFilter("end")})`;
-        const events: { value: Array<GraphEvent> } = await client.api("/me/calendar/events").filter(filter).version("v1.0").get();
+        const events: { value: Array<GraphEvent> } = await client.api(path).filter(filter).version("v1.0").get();
 
         return events.value.map((e) => {
             return {
@@ -48,6 +49,7 @@ export const graph = {
                 start: new Date(e.start.dateTime + "Z"),
                 end: new Date(e.end.dateTime + "Z"),
                 color: properties?.color,
+                link: e.webLink,
             };
         });
     }
