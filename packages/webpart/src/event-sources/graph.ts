@@ -20,6 +20,7 @@ type GraphEvent = {
     },
     webLink: string,
     subject: string,
+    bodyPreview?: string;
 }
 
 export const graph = {
@@ -50,6 +51,7 @@ export const graph = {
                 end: new Date(e.end.dateTime + "Z"),
                 color: properties?.color,
                 link: e.webLink,
+                description: e.bodyPreview,
             };
         });
     }

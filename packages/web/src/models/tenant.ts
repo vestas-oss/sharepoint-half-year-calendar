@@ -34,6 +34,8 @@ export const tenant: Tenant = {
                                 "EditorId": 1073741822,
                             },
                         ],
+                        fields: [
+                        ],
                     },
                     {
                         id: "3ffb41a5-743c-4c8f-a379-9e8e6e94b936",
@@ -119,8 +121,18 @@ export const tenant: Tenant = {
                                 "Created": "2023-10-10T06:01:48Z",
                                 "AuthorId": 1073741822,
                                 "EditorId": 1073741822,
+                                "Description": "<h1>h1</h1><b>bold</b>",
                             },
-                        ]
+                        ],
+                        fields: [
+                            {
+                                title: "Description",
+                                internalName: "Description",
+                                typeAsString: "Note",
+                                richText: true,
+                                richTextMode: "RichTextMode",
+                            }
+                        ],
                     },
                 ],
             },

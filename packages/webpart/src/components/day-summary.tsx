@@ -56,6 +56,7 @@ export function DaySummary(props: Props) {
                 title: event.title,
                 color: event.color,
                 link: event.link,
+                description: event.description,
             };
         });
     }, [events]);
@@ -78,6 +79,7 @@ export function DaySummary(props: Props) {
                             <div>
                                 {event.start} - {event.end}
                             </div>
+                            {event.description ? <div className="py-2 whitespace-pre-wrap" dangerouslySetInnerHTML={{__html: event.description}} /> : null}
                         </div>
                     );
 

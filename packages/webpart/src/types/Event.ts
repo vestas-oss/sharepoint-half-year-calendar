@@ -5,4 +5,5 @@ export type Event = {
     color?: string;
     source?: string;
     link?: string;
+    description?: string;
 }

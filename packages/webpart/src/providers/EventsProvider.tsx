@@ -104,7 +104,7 @@ export function EventsProvider(props: Props) {
                     });
                     return sourceEvents ?? [];
                 } catch (e) {
-                    console.error(`Failed to get events from source '${source.name}'.`);
+                    console.error(`Failed to get events from source name: '${source.name}', title: '${source.title}'.`);
                     console.error(e);
                 }
                 return [];
