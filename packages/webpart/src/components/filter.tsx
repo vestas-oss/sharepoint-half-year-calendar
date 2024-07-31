@@ -117,6 +117,7 @@ export function Filter(props: Props) {
                             key={key}
                             facet={value}
                             title={title}
+                            property={key}
                             values={queryParamFacets ? queryParamFacets[key] : []}
                             setValues={setQueryParamFacetsValue}
                         />

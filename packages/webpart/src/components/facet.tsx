@@ -13,13 +13,14 @@ type Props = {
         count: number;
         values: Record<string, number>;
     };
+    property: string;
     title: string;
     values: Array<string>;
     setValues: (key: string, values: Array<string>) => void;
 };
 
 export function Facet(props: Props) {
-    const { facet, title, values, setValues } = props;
+    const { facet, title, property, values, setValues } = props;
     const [open, setOpen] = React.useState(false);
 
     const onOpenChange = useCallback(
@@ -31,7 +32,7 @@ export function Facet(props: Props) {
 
     const onClearClick = useCallback(() => {
         setOpen(false);
-        setValues(title, []);
+        setValues(property, []);
     }, []);
 
     const onChange = useCallback(
@@ -44,13 +45,13 @@ export function Facet(props: Props) {
                 // Add
                 const exists = (values ?? []).find((v) => v === value);
                 if (!exists) {
-                    setValues(title, (values ?? []).concat(value));
+                    setValues(property, (values ?? []).concat(value));
                 }
                 return;
             }
             // Remove
             setValues(
-                title,
+                property,
                 (values ?? []).filter((v) => v !== value)
             );
         },

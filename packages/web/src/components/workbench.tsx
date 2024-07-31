@@ -53,6 +53,12 @@ export default function Workbench() {
                 name: "graph",
               },
             ],
+            facets: [
+              {
+                property: "title",
+                title: "Event Title",
+              },
+            ],
           }}
         />
       )}
