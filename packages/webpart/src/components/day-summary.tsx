@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { useEvents } from "../hooks/useEvents";
+import fontColorContrast from "font-color-contrast";
 
 type Props = {
     year: number;
@@ -50,11 +51,19 @@ export function DaySummary(props: Props) {
         };
 
         return (events ?? []).map((event) => {
+            const getContrastColor = (backgroundColor: string) => {
+                if (backgroundColor.indexOf("var(") === 0) {
+                    return "black";
+                }
+                return fontColorContrast(backgroundColor);
+            };
+
             return {
                 start: formatTime(event.start),
                 end: formatTime(event.end),
                 title: event.title,
-                color: event.color,
+                backgroundColor: event.color,
+                color: getContrastColor(event.color),
                 link: event.link,
                 description: event.description,
             };
@@ -74,12 +83,20 @@ export function DaySummary(props: Props) {
                         <div
                             key={`event-${index}`}
                             className="p-2 m-2 min-w-72"
-                            style={{ backgroundColor: event.color }}>
+                            style={{
+                                backgroundColor: event.backgroundColor,
+                                color: event.color,
+                            }}>
                             <div className="font-semibold">{event.title}</div>
                             <div>
                                 {event.start} - {event.end}
                             </div>
-                            {event.description ? <div className="py-2 whitespace-pre-wrap" dangerouslySetInnerHTML={{__html: event.description}} /> : null}
+                            {event.description ? (
+                                <div
+                                    className="py-2 whitespace-pre-wrap"
+                                    dangerouslySetInnerHTML={{ __html: event.description }}
+                                />
+                            ) : null}
                         </div>
                     );
 

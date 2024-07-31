@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import React from "react";
 import { Event } from "../types/Event";
+import { useContrastColor } from "../hooks/useContrastColor";
 
 type Props = {
     event: Event;
@@ -11,6 +12,8 @@ export function CalendarEvent(props: Props) {
     const { event, size } = props;
     const { title, color } = event;
 
+    const fontColor = useContrastColor(color);
+
     let content = (
         <div
             style={{ backgroundColor: color }}
@@ -18,7 +21,9 @@ export function CalendarEvent(props: Props) {
                 "cursor-default": !event.link,
             })}
             title={title}>
-            <div className="truncate px-[2px] text-xs font-semibold">{title}</div>
+            <div style={{ color: fontColor }} className={`truncate px-[2px] text-xs font-semibold`}>
+                {title}
+            </div>
         </div>
     );
 
@@ -26,6 +31,7 @@ export function CalendarEvent(props: Props) {
         content = (
             <div style={{ backgroundColor: color }} title={title}>
                 <div
+                    style={{ color: fontColor }}
                     className={clsx(
                         "truncate h-[13px] px-[2px] text-[10px] leading-tight font-semibold",
                         {
