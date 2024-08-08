@@ -1,17 +1,23 @@
 {
-    "$schema": "https://turbo.build/schema.json",
-    "pipeline": {
-      "build": {
-        "dependsOn": ["^build"]
-      },
-      "test": {
-        "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts"],
-        "outputMode": "full"
-      },
-      "dev": {
-        "cache": false,
-        "persistent": true
-      }
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "test": {
+      "inputs": [
+        "src/**/*.tsx",
+        "src/**/*.ts",
+        "test/**/*.ts"
+      ],
+      "outputLogs": "full"
+    },
+    "lint": {},
+    "dev": {
+      "cache": false,
+      "persistent": true
     }
   }
-  
+}

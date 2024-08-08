@@ -77,7 +77,7 @@ export function Day(props: Props) {
 
     if (isFetched && events && events.length > 0 && day) {
         content = (
-            <Popover withArrow openOnHover={true} mouseLeaveDelay={0}>
+            <Popover withArrow openOnHover={true} mouseLeaveDelay={0} inline={true}>
                 <PopoverTrigger disableButtonEnhancement>{content}</PopoverTrigger>
 
                 <PopoverSurface>

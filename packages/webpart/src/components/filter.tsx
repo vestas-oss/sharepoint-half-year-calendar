@@ -1,9 +1,11 @@
-import React, { useCallback, useEffect, useContext } from "react";
+import React, { useCallback, useEffect, useContext, useMemo, useState } from "react";
 import { Input, Button } from "@fluentui/react-components";
 import { Dismiss24Regular, FilterRegular } from "@fluentui/react-icons";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import { EventsContext } from "../contexts/EventsContext";
 import { useDebounce } from "../hooks/useDebounce";
+import { Facet } from "./facet";
+import { useSharePoint } from "../hooks/useSharePoint";
 
 type Props = {
     open: boolean;
@@ -15,22 +17,75 @@ export function Filter(props: Props) {
     const [filter, setFilter] = useQueryParam("filter", withDefault(StringParam, ""), {
         removeDefaultsFromUrl: true,
     });
-    const { setFilter: setContextFilter } = useContext(EventsContext);
+
+    const defaultFacets = useMemo(() => {
+        return "";
+    }, []);
+
+    const [queryParamFacetsParam, setQueryParamFacetsParam] = useQueryParam<string>(
+        "facets",
+        // July 2024 NOTE: JsonParam seems to generate new objects, hence wrap in string
+        withDefault(StringParam, defaultFacets),
+        {
+            removeDefaultsFromUrl: true,
+        }
+    );
+
+    const [queryParamFacets, setQueryParamFacets] = useState<Record<string, Array<string>>>(
+        queryParamFacetsParam ? JSON.parse(queryParamFacetsParam) : undefined
+    );
+
+    useEffect(() => {
+        if (queryParamFacets && Object.keys(queryParamFacets).length > 0) {
+            setQueryParamFacetsParam(JSON.stringify(queryParamFacets));
+        } else {
+            setQueryParamFacetsParam(defaultFacets);
+        }
+    }, [queryParamFacets]);
+
+    const setQueryParamFacetsValue = useCallback(
+        (key: string, values: Array<string>) => {
+            const facets = Object.assign({}, queryParamFacets);
+            facets[key] = values;
+            setQueryParamFacets(facets);
+        },
+        [queryParamFacets, setQueryParamFacets]
+    );
+
+    const {
+        setFilterText: setContextFilterText,
+        setFilterOpen: setContextFilterOpen,
+        setSelectedFacets: setContextSelectedFacets,
+        facets,
+    } = useContext(EventsContext);
+
+    useEffect(() => {
+        if (!open) {
+            setFilter("");
+            setQueryParamFacets({});
+        }
+        setContextFilterOpen(open);
+    }, [open]);
 
     const onChange = (_: unknown, data: { value: string }) => {
         setFilter(data.value);
     };
 
     const onCloseCallback = useCallback(() => {
-        setFilter("");
         onClose();
-    }, [onClose]);
+    }, [onClose, setQueryParamFacets, setFilter]);
 
     const debouncedFilter = useDebounce(filter, 500);
 
     useEffect(() => {
-        setContextFilter(debouncedFilter ?? "");
+        setContextFilterText(debouncedFilter ?? "");
     }, [debouncedFilter]);
+
+    useEffect(() => {
+        setContextSelectedFacets(queryParamFacets);
+    }, [queryParamFacets]);
+
+    const { properties } = useSharePoint();
 
     if (!open) {
         return null;
@@ -47,14 +102,27 @@ export function Filter(props: Props) {
                 onChange={onChange}
             />
             <div>
-                {/* WIP
-                <Button
-                    appearance="subtle"
-                    aria-label="Close"
-                    icon={<ChevronDownRegular />}
-                    iconPosition="after">
-                    Types
-                </Button> */}
+                {Object.entries(facets ?? {}).map(([key, value]) => {
+                    let title = key;
+
+                    const f = properties?.facets?.find(
+                        (f) => typeof f === "object" && f.property === key
+                    );
+                    if (typeof f === "object") {
+                        title = f.title;
+                    }
+
+                    return (
+                        <Facet
+                            key={key}
+                            facet={value}
+                            title={title}
+                            property={key}
+                            values={queryParamFacets ? queryParamFacets[key] : []}
+                            setValues={setQueryParamFacetsValue}
+                        />
+                    );
+                })}
                 <Button
                     appearance="subtle"
                     aria-label="Close"

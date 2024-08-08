@@ -22,10 +22,20 @@
     "description": { "default": "Half Year Calendar" },
     "officeFabricIconFontName": "CalendarWeek",
     "properties": {
-      "legend": true,
-      "search": true,
-      "group": true,
-      "startNode": ""
+      "extensions": [
+        {
+          "title": "Default",
+          "id": "81f8329d-67af-4b07-b59a-78e0120cd9ee",
+          "enabled": true
+        }
+      ],
+      "sources": [
+        {
+          "id": "083a3d2e-c6a1-49c2-ad2e-62e7c7037051",
+          "title": "SharePoint List",
+          "name": "sharepoint"
+        }
+      ]
     }
   }]
 }

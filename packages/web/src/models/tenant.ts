@@ -14,6 +14,30 @@ export const tenant: Tenant = {
                 serverRelativeUrl: "/",
                 lists: [
                     {
+                        id: "ab4df857-705b-4a7d-8341-3807860e8638",
+                        title: "Events 2",
+                        baseTemplate: 106,
+                        hidden: false,
+                        url: "Lists/Events-2",
+                        items: [
+                            {
+                                "FileSystemObjectType": 0,
+                                "Id": 1,
+                                "ContentTypeId": "0x0100EE277107DD3E9F4CBC7D33048BB8CB92",
+                                "Title": "Event 2",
+                                "EventDate": `${year}-04-22T06:00:00Z`,
+                                "EndDate": `${year}-04-22T14:00:00Z`,
+                                "ID": 1,
+                                "Modified": "2024-01-04T11:56:54Z",
+                                "Created": "2023-10-10T06:01:48Z",
+                                "AuthorId": 1073741822,
+                                "EditorId": 1073741822,
+                            },
+                        ],
+                        fields: [
+                        ],
+                    },
+                    {
                         id: "3ffb41a5-743c-4c8f-a379-9e8e6e94b936",
                         title: "Events",
                         baseTemplate: 106,
@@ -97,8 +121,18 @@ export const tenant: Tenant = {
                                 "Created": "2023-10-10T06:01:48Z",
                                 "AuthorId": 1073741822,
                                 "EditorId": 1073741822,
+                                "Description": "<h1>h1</h1><b>bold</b>",
                             },
-                        ]
+                        ],
+                        fields: [
+                            {
+                                title: "Description",
+                                internalName: "Description",
+                                typeAsString: "Note",
+                                richText: true,
+                                richTextMode: "RichTextMode",
+                            }
+                        ],
                     },
                 ],
             },

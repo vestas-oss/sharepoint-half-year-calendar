@@ -6,6 +6,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import '../../../assets/dist/tailwind.css';
 import { HalfYearCalendarComponent } from './HalfYearCalendarComponent';
 import { Properties } from "../../types/Properties";
+import { SPComponentLoader } from "@microsoft/sp-loader";
 
 export default class HalfYearCalendarWebPart extends BaseClientSideWebPart<Properties> {
   public render(): void {
@@ -15,6 +16,10 @@ export default class HalfYearCalendarWebPart extends BaseClientSideWebPart<Prope
         context: this.context,
         displayMode: this.displayMode,
         properties: this.properties,
+        spfx: {
+          components: SPComponentLoader,
+          graph: this.context.msGraphClientFactory,
+        },
       }
     );
 
