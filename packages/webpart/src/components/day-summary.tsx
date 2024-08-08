@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { useEvents } from "../hooks/useEvents";
 import fontColorContrast from "font-color-contrast";
+import { tokens } from "@fluentui/react-components";
 
 type Props = {
     year: number;
@@ -63,7 +64,7 @@ export function DaySummary(props: Props) {
                 end: formatTime(event.end),
                 title: event.title,
                 backgroundColor: event.color,
-                color: getContrastColor(event.color),
+                color: getContrastColor(event.color ?? tokens.colorBrandForegroundInvertedHover),
                 link: event.link,
                 description: event.description,
             };
