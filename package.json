@@ -13,23 +13,57 @@
     "@typescript-eslint/eslint-plugin": "^5.59.11",
     "@typescript-eslint/parser": "^5.59.11",
     "@typescript-eslint/typescript-estree": "^5.59.11",
-    "eslint": "^7.32.0",
-    "turbo": "^1.10.15"
+    "eslint": "^8",
+    "turbo": "^2.0.4"
   },
   "name": "@vestas/half-year-calendar",
   "engines": {
     "node": "^18"
   },
-  "packageManager": "npm@8.19.2",
+  "packageManager": "npm@10.8.1",
   "workspaces": [
     "packages/*"
   ],
   "overrides": {
+    "@fluentui/react-components": {
+      "react": "18.2.0",
+      "react-dom": "18.2.0",
+      "@fluentui/react-accordion": {
+        "react": "18.2.0",
+        "react-dom": "18.2.0"
+      }
+    },
+    "webpart": {
+      "@microsoft/sp-core-library": {
+        "react": "18.2.0",
+        "react-dom": "18.2.0"
+      }
+    },
+    "@microsoft/sp-core-library": {
+      "react": "18.2.0",
+      "react-dom": "18.2.0"
+    },
+    "use-query-params": {
+      "react": "18.2.0"
+    },
+    "@microsoft/sp-property-pane": {
+      "react": "18.2.0",
+      "react-dom": "18.2.0",
+      "@microsoft/sp-image-helper": {
+        "react": "18.2.0"
+      }
+    },
     "@microsoft/sp-webpart-base": {
       "react": "18.2.0",
       "react-dom": "18.2.0",
       "@types/react": "18.3.1",
-      "@types/react-dom": "18.3.0"
+      "@types/react-dom": "18.3.0",
+      "@microsoft/sp-property-pane": {
+        "@microsoft/sp-image-helper": {
+          "react": "18.2.0"
+        },
+        "react": "18.2.0"
+      }
     },
     "react": "18.2.0",
     "react-dom": "18.2.0",

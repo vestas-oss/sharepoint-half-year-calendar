@@ -13,7 +13,13 @@
       "privacyUrl": "",
       "termsOfUseUrl": "",
       "mpnId": ""
-    }
+    },
+    "webApiPermissionRequests": [
+      {
+        "resource": "Microsoft Graph",
+        "scope": "Calendars.ReadBasic"
+      }
+    ]
   },
   "paths": {
     "zippedPackage": "solution/half-year-calendar-webpart.sppkg"

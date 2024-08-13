@@ -1,5 +1,7 @@
 import React, { useMemo } from "react";
 import { useEvents } from "../hooks/useEvents";
+import fontColorContrast from "font-color-contrast";
+import { tokens } from "@fluentui/react-components";
 
 type Props = {
     year: number;
@@ -50,11 +52,21 @@ export function DaySummary(props: Props) {
         };
 
         return (events ?? []).map((event) => {
+            const getContrastColor = (backgroundColor: string) => {
+                if (backgroundColor.indexOf("var(") === 0) {
+                    return "black";
+                }
+                return fontColorContrast(backgroundColor);
+            };
+
             return {
                 start: formatTime(event.start),
                 end: formatTime(event.end),
                 title: event.title,
-                color: event.color,
+                backgroundColor: event.color,
+                color: getContrastColor(event.color ?? tokens.colorBrandForegroundInvertedHover),
+                link: event.link,
+                description: event.description,
             };
         });
     }, [events]);
@@ -67,17 +79,43 @@ export function DaySummary(props: Props) {
             </div>
 
             <div>
-                {formatEvents.map((event, index) => (
-                    <div
-                        key={`event-${index}`}
-                        className="p-2 m-2 min-w-72"
-                        style={{ backgroundColor: event.color }}>
-                        <div className="font-semibold">{event.title}</div>
-                        <div>
-                            {event.start} - {event.end}
+                {formatEvents.map((event, index) => {
+                    const content = (
+                        <div
+                            key={`event-${index}`}
+                            className="p-2 m-2 min-w-72"
+                            style={{
+                                backgroundColor: event.backgroundColor,
+                                color: event.color,
+                            }}>
+                            <div className="font-semibold">{event.title}</div>
+                            <div>
+                                {event.start} - {event.end}
+                            </div>
+                            {event.description ? (
+                                <div
+                                    className="py-2 whitespace-pre-wrap"
+                                    dangerouslySetInnerHTML={{ __html: event.description }}
+                                />
+                            ) : null}
                         </div>
-                    </div>
-                ))}
+                    );
+
+                    if (event.link) {
+                        return (
+                            <a
+                                href={event.link}
+                                key={`event-link-${index}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                data-interception="off">
+                                {content}
+                            </a>
+                        );
+                    }
+
+                    return content;
+                })}
             </div>
         </div>
     );

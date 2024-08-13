@@ -3,4 +3,7 @@ export type Event = {
     start: Date;
     end: Date;
     color?: string;
+    source?: string;
+    link?: string;
+    description?: string;
 }
