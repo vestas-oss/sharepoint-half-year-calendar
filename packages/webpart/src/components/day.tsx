@@ -10,6 +10,7 @@ import {
     SkeletonItem,
 } from "@fluentui/react-components";
 import { DaySummary } from "./day-summary";
+import { useDayHover } from "../hooks/useDayHover";
 
 type Props = {
     year: number;
@@ -20,6 +21,7 @@ type Props = {
 export function Day(props: Props) {
     const { year, month, day } = props;
     const { isFetched, events } = useEvents(year, month, day);
+    const { open, onMouseEnter, onMouseLeave } = useDayHover(year, month, day);
 
     let dayCharacter = "";
     let weekday: "" | number = "";
@@ -77,13 +79,20 @@ export function Day(props: Props) {
 
     if (isFetched && events && events.length > 0 && day) {
         content = (
-            <Popover withArrow openOnHover={true} mouseLeaveDelay={0} inline={true}>
-                <PopoverTrigger disableButtonEnhancement>{content}</PopoverTrigger>
+            <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+                <Popover
+                    positioning={"after"}
+                    withArrow
+                    open={open}
+                    unstable_disableAutoFocus={true}
+                    inline={true}>
+                    <PopoverTrigger disableButtonEnhancement>{content}</PopoverTrigger>
 
-                <PopoverSurface>
-                    <DaySummary year={year} month={month} day={day} events={events} />
-                </PopoverSurface>
-            </Popover>
+                    <PopoverSurface>
+                        <DaySummary year={year} month={month} day={day} events={events} />
+                    </PopoverSurface>
+                </Popover>
+            </div>
         );
     }
 
