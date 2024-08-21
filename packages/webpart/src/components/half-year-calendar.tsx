@@ -5,6 +5,7 @@ import { ArrowDownRegular, ArrowUpRegular, FilterRegular } from "@fluentui/react
 import { EventsProvider } from "../providers/EventsProvider";
 import { Period } from "../types/Period";
 import { Filter } from "./filter";
+import { DayHoverProvider } from "../providers/DayHoverProvider";
 
 export function HalfYearCalendar() {
     const [period, setPeriod] = useState<Period>({
@@ -96,17 +97,19 @@ export function HalfYearCalendar() {
                 </div>
             </div>
             <EventsProvider period={period}>
-                <Filter open={filterOpen} onClose={onFilterToggle} />
-                <div className="flex border-2 border-[#d0d0d0] divide-x-2 divide-[#d0d0d0]">
-                    {Array.from({ length: 6 }).map((_, i) => {
-                        const month = i + (period.half === "H2" ? 6 : 0);
-                        return (
-                            <div key={`month-${month}`} className="flex-grow flex-1 min-w-0">
-                                <Month year={period.year} month={month} />
-                            </div>
-                        );
-                    })}
-                </div>
+                <DayHoverProvider>
+                    <Filter open={filterOpen} onClose={onFilterToggle} />
+                    <div className="flex border-2 border-[#d0d0d0] divide-x-2 divide-[#d0d0d0]">
+                        {Array.from({ length: 6 }).map((_, i) => {
+                            const month = i + (period.half === "H2" ? 6 : 0);
+                            return (
+                                <div key={`month-${month}`} className="flex-grow flex-1 min-w-0">
+                                    <Month year={period.year} month={month} />
+                                </div>
+                            );
+                        })}
+                    </div>
+                </DayHoverProvider>
             </EventsProvider>
         </div>
     );
