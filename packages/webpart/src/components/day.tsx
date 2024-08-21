@@ -21,7 +21,7 @@ type Props = {
 export function Day(props: Props) {
     const { year, month, day } = props;
     const { isFetched, events } = useEvents(year, month, day);
-    const { open, onMouseEnter, onMouseLeave } = useDayHover(year, month, day);
+    const { open, onMouseEnter, onMouseLeave } = useDayHover(year, month, day ?? 0);
 
     let dayCharacter = "";
     let weekday: "" | number = "";
@@ -79,7 +79,7 @@ export function Day(props: Props) {
 
     if (isFetched && events && events.length > 0 && day) {
         content = (
-            <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+            <div className="h-[27px]" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
                 <Popover
                     positioning={"after"}
                     withArrow
