@@ -12,11 +12,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "msw-sp": "^1.8.0",
+    "msw-sp": "^1.10.0",
     "next": "^14.2.4",
     "react": "^18",
     "react-dom": "^18",
-    "sp-workbench": "^1.2.1"
+    "sp-workbench": "^1.2.2"
   },
   "devDependencies": {
     "@types/node": "^20",
