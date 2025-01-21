@@ -7,13 +7,13 @@ export function DayHoverProvider(props: Props) {
     const { children } = props;
     const [hover, setHover] = useState<{ year: number; month: number; day: number }>({
         year: 0,
-        month: 0,
+        month: -1,
         day: 0,
     });
 
     const [popover, setPopover] = useState<{ year: number; month: number; day: number }>({
         year: 0,
-        month: 0,
+        month: -1,
         day: 0,
     });
 
@@ -28,7 +28,8 @@ export function DayHoverProvider(props: Props) {
 
     // Effect: when hover moves outside date
     useEffect(() => {
-        if (hover.year !== 0 && hover.month !== 0 && hover.day !== 0) {
+        // Skip if still hovering
+        if (hover.year !== 0 && hover.month !== -1 && hover.day !== 0) {
             return;
         }
 
@@ -41,7 +42,7 @@ export function DayHoverProvider(props: Props) {
             ) {
                 return;
             }
-            setPopover({ year: 0, month: 0, day: 0 });
+            setPopover({ year: 0, month: -1, day: 0 });
         }, 500);
 
         return () => clearTimeout(timer);

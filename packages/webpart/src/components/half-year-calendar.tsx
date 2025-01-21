@@ -97,7 +97,6 @@ export function HalfYearCalendar() {
                 </div>
             </div>
             <EventsProvider period={period}>
-                <DayHoverProvider>
                     <Filter open={filterOpen} onClose={onFilterToggle} />
                     <div className="flex border-2 border-[#d0d0d0] divide-x-2 divide-[#d0d0d0]">
                         {Array.from({ length: 6 }).map((_, i) => {
@@ -109,7 +108,6 @@ export function HalfYearCalendar() {
                             );
                         })}
                     </div>
-                </DayHoverProvider>
             </EventsProvider>
         </div>
     );
