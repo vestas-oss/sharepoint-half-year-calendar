@@ -18,7 +18,7 @@ export const useDayHover = (year: number, month: number, day: number) => {
     }, [dayHover.setHover]);
 
     const onMouseLeave = useCallback(() => {
-        dayHover.setHover({ year: 0, month: 0, day: 0 });
+        dayHover.setHover({ year: 0, month: -1, day: 0 });
     }, [dayHover.setHover]);
 
     return {

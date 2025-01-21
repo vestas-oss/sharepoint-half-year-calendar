@@ -10,13 +10,13 @@ type DayHoverContext = {
 export const DayHoverContext = createContext<DayHoverContext>({
     hover: {
         year: 0,
-        month: 0,
+        month: -1,
         day: 0,
     },
     setHover: () => { },
     popover: {
         year: 0,
-        month: 0,
+        month: -1,
         day: 0,
     },
     setPopover: () => { },

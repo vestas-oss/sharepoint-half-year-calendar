@@ -1,6 +1,7 @@
 import React from "react";
 import { MonthHeader } from "./month-header";
 import { Day } from "./day";
+import { DayHoverProvider } from "../providers/DayHoverProvider";
 
 type Props = {
     year: number;
@@ -21,7 +22,11 @@ export function Month(props: Props) {
                     return <MonthHeader year={year} month={month} key={`month-${month}`} />;
                 }
                 if (day <= daysInMonth(year, month)) {
-                    return <Day year={year} month={month} day={day} key={`day-${month}-${day}`} />;
+                    return (
+                        <DayHoverProvider>
+                            <Day year={year} month={month} day={day} key={`day-${month}-${day}`} />
+                        </DayHoverProvider>
+                    );
                 }
                 return <Day year={year} month={month} key={`day-${month}-${day}`} />;
             })}
