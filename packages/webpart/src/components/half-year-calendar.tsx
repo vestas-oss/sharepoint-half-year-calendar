@@ -5,7 +5,6 @@ import { ArrowDownRegular, ArrowUpRegular, FilterRegular } from "@fluentui/react
 import { EventsProvider } from "../providers/EventsProvider";
 import { Period } from "../types/Period";
 import { Filter } from "./filter";
-import { DayHoverProvider } from "../providers/DayHoverProvider";
 
 export function HalfYearCalendar() {
     const [period, setPeriod] = useState<Period>({
