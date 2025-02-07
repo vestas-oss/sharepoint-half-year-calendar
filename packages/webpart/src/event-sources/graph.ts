@@ -21,6 +21,7 @@ type GraphEvent = {
     webLink: string,
     subject: string,
     bodyPreview?: string;
+    isAllDay?: boolean,
 }
 
 export const graph = {
@@ -52,7 +53,8 @@ export const graph = {
                 color: properties?.color,
                 link: e.webLink,
                 description: e.bodyPreview,
-            };
+                isAllDay: e.isAllDay,
+            } satisfies Event;
         });
     }
 };

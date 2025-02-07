@@ -6,4 +6,5 @@ export type Event = {
     source?: string;
     link?: string;
     description?: string;
+    isAllDay?: boolean;
 }

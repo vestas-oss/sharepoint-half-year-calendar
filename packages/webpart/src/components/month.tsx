@@ -23,8 +23,8 @@ export function Month(props: Props) {
                 }
                 if (day <= daysInMonth(year, month)) {
                     return (
-                        <DayHoverProvider>
-                            <Day year={year} month={month} day={day} key={`day-${month}-${day}`} />
+                        <DayHoverProvider key={`day-${month}-${day}`}>
+                            <Day year={year} month={month} day={day} />
                         </DayHoverProvider>
                     );
                 }

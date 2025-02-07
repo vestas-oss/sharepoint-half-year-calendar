@@ -31,7 +31,7 @@ export const sharepoint = {
         }
 
         const formsPromise = calendar.forms.filter("FormType eq 4")();
-        const types = ["DateTime", "Note", "Text"];
+        const types = ["DateTime", "Note", "Text", "Boolean"];
         const typesFilter = types.map(t => `TypeAsString eq '${t}'`).join(" or ");
         const fieldsSelects = ["TypeAsString", "InternalName", "RichText", "RichTextMode"];
         const fieldsPromise = calendar.fields.filter(typesFilter).select(...fieldsSelects)();
@@ -62,7 +62,15 @@ export const sharepoint = {
         if (fields.find(f => f.InternalName === "Comments")) {
             selects.push("Comments");
         }
-        for await (const page of calendar.items.filter(calendarFilter).select(...selects)) {
+
+        const allDayField = fields.find(f => f.InternalName.toLowerCase().indexOf("allday") > -1 &&
+            f.TypeAsString === "Boolean");
+        if (allDayField) {
+            selects.push(allDayField.InternalName);
+        }
+
+        const pages = calendar.items.filter(calendarFilter).select(...selects);
+        for await (const page of pages) {
             items = items.concat(page);
         }
 
@@ -77,7 +85,7 @@ export const sharepoint = {
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;');
         };
-        
+
         const encode = fields.find(f => (f.InternalName === "Description" || f.InternalName === "Comments") &&
             f.TypeAsString === "Text");
 
@@ -87,6 +95,8 @@ export const sharepoint = {
                 const end = item.EndDate;
                 const link = formUrl ? `${formUrl}?ID=${item.ID}&Source=${encodeURI(window.location.href)}` : undefined;
                 const description = item.Description || item.Comments;
+                const isAllDay = allDayField ? (item as any)[allDayField.InternalName] : undefined;
+
                 return {
                     title: item.Title,
                     start: new Date(start!),
@@ -94,7 +104,8 @@ export const sharepoint = {
                     color: properties?.color,
                     link,
                     description: encode ? htmlEncode(description) : description,
-                };
+                    isAllDay,
+                } satisfies Event;
             });
 
         return events;

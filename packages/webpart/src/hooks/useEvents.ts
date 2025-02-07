@@ -31,7 +31,16 @@ export const useEvents = (year: number, month: number, day?: number): { isFetche
         if (!isFetched) {
             return [];
         }
+
         return events?.filter((event) => {
+            if (event.isAllDay) {
+                return (
+                    ((day && event.start.getUTCDate() <= day && event.end.getUTCDate() > day) || !day) &&
+                    event.start.getUTCMonth() <= month && event.end.getUTCMonth() >= month &&
+                    event.start.getUTCFullYear() <= year && event.end.getUTCFullYear() >= year
+                );
+            }
+
             const eventRange = {
                 start: new Date(event.start),
                 end: new Date(event.end)
