@@ -43,9 +43,9 @@ export function DaySummary(props: Props) {
             const relative = relativeFormat.format(daysDiff, "day");
             switch (relative) {
                 case "tomorrow":
-                    return "next day";
+                    return "Next day";
                 case "yesterday":
-                    return "previous day";
+                    return "Previous day";
                 default:
                     return relative;
             }
@@ -59,9 +59,41 @@ export function DaySummary(props: Props) {
                 return fontColorContrast(backgroundColor);
             };
 
+            let start = formatTime(event.start);
+            let end = formatTime(event.end);
+            if (event.isAllDay) {
+                const lastDay = new Date(new Date(event.end).setDate(event.end.getDate() - 1));
+                end = formatTime(lastDay);
+
+                console.log(event.start);
+                console.log(event.end);
+                if (
+                    new Date(event.start).setDate(event.start.getDate() + 1) === event.end.getTime()
+                ) {
+                    start = "All day";
+                    end = "";
+                }
+
+                const startToday =
+                    event.start.getDate() === day &&
+                    event.start.getMonth() === month &&
+                    event.start.getFullYear() === year;
+                if (startToday) {
+                    start = "All day";
+                }
+
+                const endToday =
+                    lastDay.getDate() === day &&
+                    lastDay.getMonth() === month &&
+                    lastDay.getFullYear() === year;
+                if (endToday) {
+                    end = "All day";
+                }
+            }
+
             return {
-                start: formatTime(event.start),
-                end: formatTime(event.end),
+                start,
+                end,
                 title: event.title,
                 backgroundColor: event.color,
                 color: getContrastColor(event.color ?? tokens.colorBrandForegroundInvertedHover),
@@ -89,9 +121,7 @@ export function DaySummary(props: Props) {
                                 color: event.color,
                             }}>
                             <div className="font-semibold">{event.title}</div>
-                            <div>
-                                {event.start} - {event.end}
-                            </div>
+                            <div>{[event.start, event.end].filter((s) => s).join(" - ")}</div>
                             {event.description ? (
                                 <div
                                     className="py-2 whitespace-pre-wrap"

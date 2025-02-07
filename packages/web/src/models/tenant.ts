@@ -123,6 +123,21 @@ export const tenant: Tenant = {
                                 "EditorId": 1073741822,
                                 "Description": "<h1>h1</h1><b>bold</b>",
                             },
+                            {
+                                "FileSystemObjectType": 0,
+                                "Id": 7,
+                                "ContentTypeId": "0x0100EE277107DD3E9F4CBC7D33048BB8CB92",
+                                "Title": "Valentine's Day",
+                                "EventDate": `${year}-02-14T00:00:00Z`,
+                                "EndDate": `${year}-02-15T00:00:00Z`,
+                                "ID": 6,
+                                "Modified": "2024-01-04T11:56:54Z",
+                                "Created": "2023-10-10T06:01:48Z",
+                                "AuthorId": 1073741822,
+                                "EditorId": 1073741822,
+                                "Description": "Valentine's Day, also called Saint Valentine's Day or the Feast<br />of Saint Valentine, is celebrated annually on February 14.",
+                                "IsAllDay": true,
+                            },
                         ],
                         fields: [
                             {
@@ -131,7 +146,12 @@ export const tenant: Tenant = {
                                 typeAsString: "Note",
                                 richText: true,
                                 richTextMode: "RichTextMode",
-                            }
+                            },
+                            {
+                                title: "All Day",
+                                internalName: "IsAllDay",
+                                typeAsString: "Boolean",
+                            },
                         ],
                     },
                 ],
