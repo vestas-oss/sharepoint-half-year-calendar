@@ -34,8 +34,11 @@ export const useEvents = (year: number, month: number, day?: number): { isFetche
 
         return events?.filter((event) => {
             if (event.isAllDay) {
+                if (!day) {
+                    return false;
+                }
                 return (
-                    ((day && event.start.getUTCDate() <= day && event.end.getUTCDate() > day) || !day) &&
+                    event.start.getUTCDate() <= day && event.end.getUTCDate() > day &&
                     event.start.getUTCMonth() <= month && event.end.getUTCMonth() >= month &&
                     event.start.getUTCFullYear() <= year && event.end.getUTCFullYear() >= year
                 );
