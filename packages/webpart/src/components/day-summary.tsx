@@ -65,15 +65,6 @@ export function DaySummary(props: Props) {
                 const lastDay = new Date(new Date(event.end).setDate(event.end.getDate() - 1));
                 end = formatTime(lastDay);
 
-                console.log(event.start);
-                console.log(event.end);
-                if (
-                    new Date(event.start).setDate(event.start.getDate() + 1) === event.end.getTime()
-                ) {
-                    start = "All day";
-                    end = "";
-                }
-
                 const startToday =
                     event.start.getDate() === day &&
                     event.start.getMonth() === month &&
@@ -88,6 +79,14 @@ export function DaySummary(props: Props) {
                     lastDay.getFullYear() === year;
                 if (endToday) {
                     end = "All day";
+                }
+
+                const isOneDay =
+                    new Date(event.start).setDate(event.start.getDate() + 1) ===
+                    event.end.getTime();
+                if (isOneDay) {
+                    start = "All day";
+                    end = "";
                 }
             }
 
