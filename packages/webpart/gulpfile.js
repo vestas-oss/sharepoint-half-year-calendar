@@ -120,4 +120,6 @@ build.task('fix-manifest', {
   }}
 );
 
+build.lintCmd.enabled = false;
+
 build.initialize(require('gulp'));

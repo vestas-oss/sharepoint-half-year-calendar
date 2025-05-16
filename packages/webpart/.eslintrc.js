@@ -12,7 +12,6 @@ module.exports = {
         'sourceType': 'module'
       },
       rules: {
-        "@typescript-eslint/no-non-null-assertion": 0,
         // Prevent usage of the JavaScript null value, while allowing code to access existing APIs that may require null. https://www.npmjs.com/package/@rushstack/eslint-plugin
         '@rushstack/no-new-null': 1,
         // Require Jest module mocking APIs to be called before any other statements in their code block. https://www.npmjs.com/package/@rushstack/eslint-plugin
@@ -21,46 +20,20 @@ module.exports = {
         '@rushstack/security/no-unsafe-regexp': 1,
         // STANDARDIZED BY:   @typescript-eslint\eslint-plugin\dist\configs\recommended.json
         '@typescript-eslint/adjacent-overload-signatures': 1,
-        // STANDARDIZED BY:   @typescript-eslint\eslint-plugin\dist\configs\recommended.json
-        //
-        // CONFIGURATION:     By default, these are banned: String, Boolean, Number, Object, Symbol
-        '@typescript-eslint/ban-types': [
-          1,
-          {
-            'extendDefaults': false,
-            'types': {
-              'String': {
-                'message': 'Use \'string\' instead',
-                'fixWith': 'string'
-              },
-              'Boolean': {
-                'message': 'Use \'boolean\' instead',
-                'fixWith': 'boolean'
-              },
-              'Number': {
-                'message': 'Use \'number\' instead',
-                'fixWith': 'number'
-              },
-              'Object': {
-                'message': 'Use \'object\' instead, or else define a proper TypeScript type:'
-              },
-              'Symbol': {
-                'message': 'Use \'symbol\' instead',
-                'fixWith': 'symbol'
-              },
-              'Function': {
-                'message': 'The \'Function\' type accepts any function-like value.\nIt provides no type safety when calling the function, which can be a common source of bugs.\nIt also accepts things like class declarations, which will throw at runtime as they will not be called with \'new\'.\nIf you are expecting the function to accept certain arguments, you should explicitly define the function shape.'
-              }
-            }
-          }
-        ],
         // RATIONALE:         Code is more readable when the type of every variable is immediately obvious.
         //                    Even if the compiler may be able to infer a type, this inference will be unavailable
         //                    to a person who is reviewing a GitHub diff.  This rule makes writing code harder,
         //                    but writing code is a much less important activity than reading it.
         //
         // STANDARDIZED BY:   @typescript-eslint\eslint-plugin\dist\configs\recommended.json
-        '@typescript-eslint/explicit-function-return-type': 0,
+        '@typescript-eslint/explicit-function-return-type': [
+          0,
+          {
+            'allowExpressions': true,
+            'allowTypedFunctionExpressions': true,
+            'allowHigherOrderFunctions': false
+          }
+        ],
         // STANDARDIZED BY:   @typescript-eslint\eslint-plugin\dist\configs\recommended.json
         // Rationale to disable: although this is a recommended rule, it is up to dev to select coding style.
         // Set to 1 (warning) or 2 (error) to enable.
@@ -73,13 +46,13 @@ module.exports = {
         //                    This rule should be suppressed only in very special cases such as JSON.stringify()
         //                    where the type really can be anything.  Even if the type is flexible, another type
         //                    may be more appropriate such as "unknown", "{}", or "Record<k,V>".
-        '@typescript-eslint/no-explicit-any': 0,
+        '@typescript-eslint/no-explicit-any': 1,
         // RATIONALE:         The #1 rule of promises is that every promise chain must be terminated by a catch()
         //                    handler.  Thus wherever a Promise arises, the code must either append a catch handler,
         //                    or else return the object to a caller (who assumes this responsibility).  Unterminated
         //                    promise chains are a serious issue.  Besides causing errors to be silently ignored,
         //                    they can also cause a NodeJS process to terminate unexpectedly.
-        '@typescript-eslint/no-floating-promises': 0,
+        '@typescript-eslint/no-floating-promises': 2,
         // RATIONALE:         Catches a common coding mistake.
         '@typescript-eslint/no-for-in-array': 2,
         // STANDARDIZED BY:   @typescript-eslint\eslint-plugin\dist\configs\recommended.json
@@ -129,7 +102,7 @@ module.exports = {
         ],
         // STANDARDIZED BY:   @typescript-eslint\eslint-plugin\dist\configs\recommended.json
         '@typescript-eslint/no-use-before-define': [
-          0,
+          2,
           {
             'functions': false,
             'classes': true,
@@ -297,7 +270,7 @@ module.exports = {
         'promise/param-names': 2,
         // RATIONALE:         Catches code that is likely to be incorrect
         // STANDARDIZED BY:   eslint\conf\eslint-recommended.js
-        'require-atomic-updates': 0,
+        'require-atomic-updates': 2,
         // STANDARDIZED BY:   eslint\conf\eslint-recommended.js
         'require-yield': 1,
         // "Use strict" is redundant when using the TypeScript compiler.
@@ -317,8 +290,7 @@ module.exports = {
         // ====================================================================
         '@microsoft/spfx/import-requires-chunk-name': 1,
         '@microsoft/spfx/no-require-ensure': 2,
-        '@microsoft/spfx/pair-react-dom-render-unmount': 1,
-        "@typescript-eslint/no-empty-function": 0
+        '@microsoft/spfx/pair-react-dom-render-unmount': 1
       }
     },
     {

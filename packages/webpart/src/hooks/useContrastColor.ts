@@ -7,10 +7,10 @@ export const useContrastColor = (backgroundColor?: string): string => {
         backgroundColor = tokens.colorBrandForegroundInvertedHover;
     }
     const contrastColor = useMemo(() => {
-        if (backgroundColor.indexOf("var(") === 0) {
+        if (backgroundColor?.indexOf("var(") === 0) {
             return "black";
         }
-        return fontColorContrast(backgroundColor);
+        return fontColorContrast(backgroundColor ?? tokens.colorBrandForegroundInvertedHover);
     }, [backgroundColor]);
 
     return contrastColor;
