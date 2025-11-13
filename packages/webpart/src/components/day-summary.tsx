@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useEvents } from "../hooks/useEvents";
+import type { useEvents } from "../hooks/useEvents";
 import fontColorContrast from "font-color-contrast";
 import { tokens } from "@fluentui/react-components";
 
@@ -84,7 +84,7 @@ export function DaySummary(props: Props) {
                 const isOneDay =
                     new Date(event.start).setDate(event.start.getDate() + 1) ===
                     event.end.getTime();
-                if (isOneDay) {
+                if (isOneDay || start === end) {
                     start = "All day";
                     end = "";
                 }

@@ -31,7 +31,7 @@ export const sharepoint = {
         }
 
         const formsPromise = calendar.forms.filter("FormType eq 4")();
-        const types = ["DateTime", "Note", "Text", "Boolean"];
+        const types = ["DateTime", "Note", "Text", "Boolean", "AllDayEvent"];
         const typesFilter = types.map(t => `TypeAsString eq '${t}'`).join(" or ");
         const fieldsSelects = ["TypeAsString", "InternalName", "RichText", "RichTextMode"];
         const fieldsPromise = calendar.fields.filter(typesFilter).select(...fieldsSelects)();
@@ -64,7 +64,7 @@ export const sharepoint = {
         }
 
         const allDayField = fields.find(f => f.InternalName.toLowerCase().indexOf("allday") > -1 &&
-            f.TypeAsString === "Boolean");
+            (f.TypeAsString === "Boolean" || f.TypeAsString === "AllDayEvent"));
         if (allDayField) {
             selects.push(allDayField.InternalName);
         }

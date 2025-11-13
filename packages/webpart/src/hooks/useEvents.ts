@@ -8,10 +8,11 @@ import { useContext } from "react";
 import { Event } from "../types/Event";
 
 type IRange = {
-    start: number | Date
-    end: number | Date
+    start: Date,
+    end: Date,
 }
 
+// Returns boolean if range1 is included in range2
 function isRangeOverlap(
     range1: IRange,
     range2: IRange,
@@ -24,6 +25,29 @@ function isRangeOverlap(
     return x1 <= y2 && y1 <= x2
 }
 
+// Returns the intersection of two date ranges
+function getRangeIntersection(
+    range1: IRange,
+    range2: IRange,
+): number {
+    const start1 = range1.start;
+    const end1 = range1.end;
+    const start2 = range2.start;
+    const end2 = range2.end;
+
+    // Check if ranges overlap
+    if (start1 > end2 || start2 > end1) {
+        return 0;
+    }
+
+    // Calculate intersection bounds
+    const intersectionStart = new Date(Math.max(start1.getTime(), start2.getTime()));
+    const intersectionEnd = new Date(Math.min(end1.getTime(), end2.getTime()));
+    const durationMs = intersectionEnd.getTime() - intersectionStart.getTime();
+
+    return durationMs;
+}
+
 export const useEvents = (year: number, month: number, day?: number): { isFetched: boolean, events?: Array<Event> } => {
     const { isFetched, events } = useContext(EventsContext);
 
@@ -33,25 +57,37 @@ export const useEvents = (year: number, month: number, day?: number): { isFetche
         }
 
         return events?.filter((event) => {
-            if (event.isAllDay) {
-                if (!day) {
-                    return false;
-                }
-                return (
-                    event.start.getUTCDate() <= day && event.end.getUTCDate() > day &&
-                    event.start.getUTCMonth() <= month && event.end.getUTCMonth() >= month &&
-                    event.start.getUTCFullYear() <= year && event.end.getUTCFullYear() >= year
-                );
+            if (!day) {
+                return false;
             }
 
             const eventRange = {
                 start: new Date(event.start),
                 end: new Date(event.end)
             };
+
+            if (event.isAllDay) {
+                const dayRange = {
+                    start: new Date(Date.UTC(year, month, day)),
+                    end: new Date(Date.UTC(year, month, day, 23, 59, 59))
+                };
+
+                const overlap = isRangeOverlap(dayRange, eventRange);
+                if (overlap) {
+                    const intersection = getRangeIntersection(dayRange, eventRange);
+                    // Note some all day events ends minute 59, other next day at 00
+                    if (intersection === 0) {
+                        return false;
+                    }
+                }
+                return overlap;
+            }
+
             const dayRange = {
                 start: new Date(year, month, day),
-                end: new Date(year, month, day, 23, 59, 59)
-            }
+                end: new Date(year, month, day, 23, 59, 59),
+            };
+
             return isRangeOverlap(eventRange, dayRange);
         });
     }, [events, year, month, day, isFetched]);
